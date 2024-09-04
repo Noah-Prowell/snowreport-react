@@ -1,17 +1,27 @@
-// src/App.js
-import React from 'react';
-import Header from './components/Header';
-import Footer from './components/Footer';
-import 'C:\Users\noahp\OneDrive\Documents\snowreport-react\snow-report\src\App.css';
+// // src/App.js
 
-function App() {
+import React from 'react';
+import ReactDOM from 'react-dom';
+import SnowDepthChart from './components/Depthchart';
+import PrecipChart from './components/Precipitationchart';
+
+const App = () => {
   return (
-    <div id="page-wrapper">
-      <Header />
-      <Footer />
+    <div>
+      <SnowDepthChart 
+        stationId="GHCND:USS0005K14S" 
+        initialStartDate="2024-01-07" 
+        initialEndDate="2024-01-14" 
+      />
+      <br></br>
+      <PrecipChart 
+        stationId="GHCND:USS0005K14S" 
+        initialStartDate="2024-01-07" 
+        initialEndDate="2024-01-14" 
+      />
     </div>
   );
-}
+};
 
+ReactDOM.render(<App />, document.getElementById('root'));
 export default App;
-

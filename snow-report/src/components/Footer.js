@@ -1,6 +1,6 @@
 // src/components/Footer.js
 import React from 'react';
-import 'C:\Users\noahp\OneDrive\Documents\snowreport-react\snow-report\src\App.css';
+
 
 const Footer = () => {
   return (
