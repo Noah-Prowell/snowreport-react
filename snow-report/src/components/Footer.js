@@ -32,7 +32,7 @@ const Footer = () => {
           </div>
           <div className="col-6 col-12-medium">
             <section>
-              <p>Erat lorem ipsum veroeros consequat magna tempus lorem ipsum consequat Phaselamet mollis tortor congue. Sed quis mauris sit amet magna accumsan tristique. Curabitur leo nibh, rutrum eu malesuada.</p>
+              <p>*Currently being built</p>
               <div className="row">
                 <div className="col-6 col-12-small">
                   <ul className="icons">

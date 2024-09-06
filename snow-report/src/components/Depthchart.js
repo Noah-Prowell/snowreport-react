@@ -39,10 +39,14 @@ const SnowDepthChart = ({ stationId, initialStartDate, initialEndDate }) => {
     fetchSnowData();
     }, [stationId, initialStartDate, initialEndDate]);
 
-    const processDataForChart = () => {
     const labels = snowData.map(item => item.date);
+    const processDataForChart = () => {
+        const labels = snowData.map(item => {
+          // Format the date to only show the date part (YYYY-MM-DD)
+        const date = new Date(item.date);
+          return date.toISOString().split('T')[0];  // This removes the time part
+        });
     const dataPoints = snowData.map(item => item.value);
-
     return {
         labels,
         datasets: [
