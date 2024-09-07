@@ -1,7 +1,6 @@
 // // src/App.js
 
 import React, { useState } from 'react';
-import ReactDOM from 'react-dom/client';
 import SnowDepthChart from './components/Depthchart';
 import PrecipChart from './components/Precipitationchart';
 import Dropdown from './components/Dropdown';
@@ -12,6 +11,8 @@ import './App.css';
 const App = () => {
   const [stationId, setStationId] = useState('GHCND:USS0005K14S');
   const [selectedStationLabel, setSelectedStationLabel] = useState('Granby');
+  const [newStationId, setNewStationId] = useState(stationId);
+  const [newStationLabel, setNewStationLabel] = useState(selectedStationLabel);
   const [startDate, setStartDate] = useState('2024-01-07');
   const [endDate, setEndDate] = useState('2024-01-14');
   const [chartStartDate, setChartStartDate] = useState(startDate);
@@ -23,52 +24,39 @@ const App = () => {
     // Add more stations as needed
   ];
   const handleStationSelect = (stationValue) => {
-    setStationId(stationValue);
     const selectedStation = stationOptions.find(option => option.value === stationValue);
     if (selectedStation) {
-      setSelectedStationLabel(selectedStation.label);
+      setNewStationId(selectedStation.value);  // Temporary state for station ID
+      setNewStationLabel(selectedStation.label);  // Temporary state for station label
     }
   };
   const handleUpdateClick = () => {
-    setChartStartDate(startDate);
-    setChartEndDate(endDate);
+    setStationId(newStationId);  // Update station ID
+    setSelectedStationLabel(newStationLabel);  // Update station label
+    setChartStartDate(startDate);  // Update chart start date
+    setChartEndDate(endDate);  // Update chart end date
   };
   return (
 
     <div>
-      <Header />
-      <h1>{selectedStationLabel}</h1>
-
-    
-    <Dropdown 
-        label="Select Station:" 
-        options={stationOptions} 
-        onSelect={handleStationSelect} 
+       <Header 
+        stationOptions={stationOptions}
+        selectedStationLabel={selectedStationLabel}
+        startDate={startDate}
+        endDate={endDate}
+        setStartDate={setStartDate}
+        setEndDate={setEndDate}
+        handleStationSelect={handleStationSelect}
+        handleUpdateClick={handleUpdateClick}
       />
-    <div>
-        <label>Start Date: </label>
-        <input 
-          type="date" 
-          value={startDate} 
-          onChange={(e) => setStartDate(e.target.value)} 
-        />
-      </div>
-      
-      <div>
-        <label>End Date: </label>
-        <input 
-          type="date" 
-          value={endDate} 
-          onChange={(e) => setEndDate(e.target.value)} 
-        />
-      </div>
-
-      <button onClick={handleUpdateClick}>Update Graph</button>
+      {/* <h1>{selectedStationLabel}</h1> */}
+      {/* <h1>{selectedStationLabel}</h1> */}
       <SnowDepthChart 
         stationId={stationId} 
         initialStartDate={chartStartDate} 
         initialEndDate={chartEndDate} 
       />
+      <br />
       <PrecipChart 
         stationId={stationId} 
         initialStartDate={chartStartDate} 
@@ -79,5 +67,5 @@ const App = () => {
   );
 };
 
-// ReactDOM.createRoot(<App />, document.getElementById('root'));
+
 export default App;
