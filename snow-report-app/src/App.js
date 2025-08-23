@@ -171,7 +171,7 @@ const SkiArea = {
   LOVELAND: { id: 'GHCND:USS0005K24S', name: 'Loveland Pass', elevation: '11,990 ft' }
 };
 
-const NOAA_TOKEN = 'ptCSsKJigBiLLmlIdcjtNPMGhdYTpiXG';
+
 
 function SnowReportApp() {
   const [selectedArea, setSelectedArea] = useState(SkiArea.GRANBY);
@@ -189,58 +189,52 @@ function SnowReportApp() {
     setError(null);
     
     try {
-      // Simulate API calls for demo purposes
-      // In production, these would be real NOAA API calls
-      const snowResponse = {
-        results: [
-          { date: '2024-01-07T00:00:00', value: 24 },
-          { date: '2024-01-08T00:00:00', value: 26 },
-          { date: '2024-01-09T00:00:00', value: 28 },
-          { date: '2024-01-10T00:00:00', value: 30 },
-          { date: '2024-01-11T00:00:00', value: 32 },
-          { date: '2024-01-12T00:00:00', value: 35 },
-          { date: '2024-01-13T00:00:00', value: 38 },
-          { date: '2024-01-14T00:00:00', value: 40 }
-        ]
-      };
-      
-      const precipResponse = {
-        results: [
-          { date: '2024-01-07T00:00:00', value: 0.1 },
-          { date: '2024-01-08T00:00:00', value: 0.3 },
-          { date: '2024-01-09T00:00:00', value: 0.5 },
-          { date: '2024-01-10T00:00:00', value: 0.2 },
-          { date: '2024-01-11T00:00:00', value: 0.8 },
-          { date: '2024-01-12T00:00:00', value: 1.2 },
-          { date: '2024-01-13T00:00:00', value: 0.4 },
-          { date: '2024-01-14T00:00:00', value: 0.1 }
-        ]
-      };
-
-      if (snowResponse.results) {
-        const formattedSnowData = snowResponse.results.map(item => ({
-          date: item.date.split('T')[0],
-          value: item.value,
-          formattedDate: new Date(item.date).toLocaleDateString()
-        }));
-        setSnowData(formattedSnowData);
-      }
-
-      if (precipResponse.results) {
-        const formattedPrecipData = precipResponse.results.map(item => ({
-          date: item.date.split('T')[0],
-          value: item.value * 10, // Convert to inches
-          formattedDate: new Date(item.date).toLocaleDateString()
-        }));
-        setPrecipData(formattedPrecipData);
-      }
-    } catch (err) {
-      setError('Failed to fetch weather data. Please try again.');
-      console.error('Error fetching data:', err);
-    } finally {
-      setLoading(false);
+    console.log('Calling backend API...');
+    
+    // Call your backend server instead of NOAA directly
+    const response = await fetch('http://localhost:3001/api/weather-data', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        stationId,
+        startDate,
+        endDate
+      })
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Backend request failed: ${response.status}`);
     }
-  };
+    
+    const data = await response.json();
+    
+    if (!data.success) {
+      throw new Error(data.message || 'Backend returned an error');
+    }
+    
+    // Set the data in your React state
+    setSnowData(data.snowData || []);
+    setPrecipData(data.precipData || []);
+    
+    console.log('Data loaded successfully:', {
+      snowRecords: data.snowData?.length || 0,
+      precipRecords: data.precipData?.length || 0
+    });
+    
+  } catch (err) {
+    const errorMessage = err.message || 'Failed to fetch weather data. Please try again.';
+    setError(errorMessage);
+    console.error('Error fetching data:', err);
+    
+    // Set empty arrays on error
+    setSnowData([]);
+    setPrecipData([]);
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     if (currentPage === 'data') {
