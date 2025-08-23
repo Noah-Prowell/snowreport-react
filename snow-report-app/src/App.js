@@ -61,108 +61,123 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 // Create a mountain/ski themed color palette
 const theme = createTheme({
   palette: {
-    primary: {
-      main: '#2E4F99', // Deep mountain blue
-      light: '#5A7BC8',
-      dark: '#1A3366',
-    },
-    secondary: {
-      main: '#8B4513', // Saddle brown (earth/wood tones)
-      light: '#CD853F',
-      dark: '#654321',
-    },
-    success: {
-      main: '#228B22', // Forest green
-      light: '#32CD32',
-      dark: '#006400',
-    },
-    info: {
-      main: '#4682B4', // Steel blue (ski equipment)
-      light: '#87CEEB',
-      dark: '#2F4F4F',
-    },
-    warning: {
-      main: '#FF8C00', // Dark orange (sunset on peaks)
-      light: '#FFA500',
-      dark: '#FF6347',
-    },
-    error: {
-      main: '#DC143C', // Crimson (danger/avalanche warning)
-      light: '#FF6B6B',
-      dark: '#8B0000',
-    },
-    background: {
-      default: '#F0F8FF', // Alice blue (fresh snow)
-      paper: '#FFFFFF',
-    },
-    text: {
-      primary: '#2F4F4F', // Dark slate gray
-      secondary: '#708090', // Slate gray
-    },
+  primary: {
+    main: '#1a365d',
+    light: '#2c5282',
+    dark: '#0f172a',
   },
+  secondary: {
+    main: '#2d3748',
+    light: '#4a5568',
+    dark: '#1a202c',
+  },
+  success: {
+    main: '#38a169',
+    light: '#68d391',
+    dark: '#2f855a',
+  },
+  info: {
+    main: '#3182ce',
+    light: '#63b3ed',
+    dark: '#2c5282',
+  },
+  warning: {
+    main: '#ed8936',
+    light: '#fbb369',
+    dark: '#c05621',
+  },
+  error: {
+    main: '#e53e3e',
+    light: '#fc8181',
+    dark: '#c53030',
+  },
+  background: {
+    default: '#f7fafc',
+    paper: '#ffffff',
+  },
+  text: {
+    primary: '#1a202c',
+    secondary: '#4a5568',
+  },
+},
   typography: {
-    h1: {
-      fontWeight: 700,
-      fontFamily: '"Roboto Condensed", "Arial", sans-serif',
-    },
-    h2: {
-      fontWeight: 600,
-      fontFamily: '"Roboto Condensed", "Arial", sans-serif',
-    },
-    h3: {
-      fontWeight: 600,
-      fontFamily: '"Roboto Condensed", "Arial", sans-serif',
-    },
-    h4: {
-      fontWeight: 600,
-    },
-    h5: {
-      fontWeight: 600,
-    },
-    h6: {
-      fontWeight: 600,
-    },
+  fontFamily: '"Inter", "Segoe UI", "Roboto", sans-serif',
+  h1: {
+    fontWeight: 800,
+    letterSpacing: '-0.025em',
   },
+  h2: {
+    fontWeight: 700,
+    letterSpacing: '-0.025em',
+  },
+  h3: {
+    fontWeight: 700,
+  },
+  h4: {
+    fontWeight: 600,
+  },
+  h5: {
+    fontWeight: 600,
+  },
+  h6: {
+    fontWeight: 600,
+  },
+  body1: {
+    fontWeight: 400,
+    lineHeight: 1.6,
+  },
+  body2: {
+    fontWeight: 400,
+    lineHeight: 1.5,
+  },
+},
   shape: {
     borderRadius: 12,
   },
-  components: {
-    MuiCard: {
-      styleOverrides: {
-        root: {
-          boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
-          transition: 'all 0.2s ease-in-out',
-          background: 'linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%)',
-          '&:hover': {
-            boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
-            transform: 'translateY(-2px)',
-          },
-        },
-      },
-    },
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          textTransform: 'none',
-          borderRadius: 8,
-          fontWeight: 600,
-        },
-        contained: {
-          background: 'linear-gradient(45deg, #2E4F99, #4682B4)',
-          '&:hover': {
-            background: 'linear-gradient(45deg, #1A3366, #2F4F4F)',
-          },
-        },
-      },
-    },
-    MuiAppBar: {
-      styleOverrides: {
-        root: {
-          background: 'linear-gradient(90deg, #2E4F99, #4682B4)',
+components: {
+  MuiCard: {
+    styleOverrides: {
+      root: {
+        boxShadow: '0 8px 25px -8px rgba(0, 0, 0, 0.15)',
+        borderRadius: 16,
+        transition: 'all 0.3s ease-in-out',
+        background: 'linear-gradient(145deg, #ffffff 0%, #f7fafc 100%)',
+        '&:hover': {
+          boxShadow: '0 20px 40px -8px rgba(0, 0, 0, 0.2)',
+          transform: 'translateY(-4px)',
         },
       },
     },
   },
+  MuiButton: {
+    styleOverrides: {
+      root: {
+        textTransform: 'none',
+        borderRadius: 12,
+        fontWeight: 600,
+        padding: '12px 24px',
+      },
+      contained: {
+        background: 'linear-gradient(45deg, #1a365d, #2c5282)',
+        boxShadow: '0 4px 14px 0 rgba(26, 54, 93, 0.4)',
+        '&:hover': {
+          background: 'linear-gradient(45deg, #0f172a, #1a365d)',
+          transform: 'translateY(-2px)',
+          boxShadow: '0 8px 25px 0 rgba(26, 54, 93, 0.5)',
+        },
+      },
+    },
+  },
+  MuiAppBar: {
+    styleOverrides: {
+      root: {
+        background: 'rgba(255, 255, 255, 0.95)',
+        backdropFilter: 'blur(12px)',
+        borderBottom: '1px solid rgba(0, 0, 0, 0.08)',
+      },
+    },
+  },
+},
 });
 
 const SkiArea = {
@@ -264,39 +279,131 @@ function SnowReportApp() {
     return (
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <Box sx={{ flexGrow: 1, minHeight: '100vh', background: 'linear-gradient(135deg, #1e2c49ff 0%, #72b4ebff 50%, #87CEEB 100%)' }}>
-          {/* Header */}
-          <AppBar position="sticky" sx={{ background: 'rgba(255, 255, 255, 0.95)', backdropFilter: 'blur(10px)' }} elevation={0}>
-            <Toolbar>
-              <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
-                <Box sx={{ 
-                  width: 40, 
-                  height: 40, 
-                  borderRadius: 2, 
-                  background: 'linear-gradient(45deg, #770e0eff, #ee4e4eff)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  mr: 2
-                }}>
-                  <Mountain sx={{ color: 'white', fontSize: 24 }} />
-                </Box>
-                <Box>
-                  <Typography variant="h5" sx={{ fontWeight: 700, color: 'text.primary' }}>
-                    Snow Report
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: '0.85rem' }}>
-                    Professional backcountry conditions
-                  </Typography>
-                </Box>
-              </Box>
-            </Toolbar>
-          </AppBar>
+        <Box sx={{ 
+  flexGrow: 1, 
+  minHeight: '100vh', 
+  background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #475569 75%, #64748b 100%)',
+  '&::before': {
+  content: '""',
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  backgroundImage: `
+    /* Outermost contour - base elevation (thickest line) */
+    radial-gradient(ellipse 1400px 800px at 50% 50%, transparent 0%, transparent 79%, rgba(255, 255, 255, 0.06) 79.5%, rgba(255, 255, 255, 0.06) 81%, transparent 81.5%),
+    
+    /* Major contour lines (every 200ft - thicker) */
+    radial-gradient(ellipse 1200px 700px at 50% 50%, transparent 0%, transparent 79%, rgba(255, 255, 255, 0.05) 79.5%, rgba(255, 255, 255, 0.05) 80.5%, transparent 81%),
+    radial-gradient(ellipse 1000px 600px at 50% 50%, transparent 0%, transparent 79%, rgba(255, 255, 255, 0.06) 79.5%, rgba(255, 255, 255, 0.06) 80.5%, transparent 81%),
+    radial-gradient(ellipse 800px 500px at 50% 50%, transparent 0%, transparent 79%, rgba(255, 255, 255, 0.05) 79.5%, rgba(255, 255, 255, 0.05) 80.5%, transparent 81%),
+    radial-gradient(ellipse 600px 400px at 50% 50%, transparent 0%, transparent 79%, rgba(255, 255, 255, 0.06) 79.5%, rgba(255, 255, 255, 0.06) 80.5%, transparent 81%),
+    
+    /* Intermediate contour lines (every 40ft - medium thickness) */
+    radial-gradient(ellipse 1300px 750px at 50% 50%, transparent 0%, transparent 79.2%, rgba(255, 255, 255, 0.04) 79.5%, rgba(255, 255, 255, 0.04) 80.2%, transparent 80.5%),
+    radial-gradient(ellipse 1100px 650px at 50% 50%, transparent 0%, transparent 79.2%, rgba(255, 255, 255, 0.04) 79.5%, rgba(255, 255, 255, 0.04) 80.2%, transparent 80.5%),
+    radial-gradient(ellipse 900px 550px at 50% 50%, transparent 0%, transparent 79.2%, rgba(255, 255, 255, 0.04) 79.5%, rgba(255, 255, 255, 0.04) 80.2%, transparent 80.5%),
+    radial-gradient(ellipse 700px 450px at 50% 50%, transparent 0%, transparent 79.2%, rgba(255, 255, 255, 0.04) 79.5%, rgba(255, 255, 255, 0.04) 80.2%, transparent 80.5%),
+    radial-gradient(ellipse 500px 350px at 50% 50%, transparent 0%, transparent 79.2%, rgba(255, 255, 255, 0.04) 79.5%, rgba(255, 255, 255, 0.04) 80.2%, transparent 80.5%),
+    
+    /* Minor contour lines (every 20ft - thinner) */
+    radial-gradient(ellipse 1350px 775px at 50% 50%, transparent 0%, transparent 79.3%, rgba(255, 255, 255, 0.03) 79.5%, rgba(255, 255, 255, 0.03) 80%, transparent 80.2%),
+    radial-gradient(ellipse 1250px 725px at 50% 50%, transparent 0%, transparent 79.3%, rgba(255, 255, 255, 0.03) 79.5%, rgba(255, 255, 255, 0.03) 80%, transparent 80.2%),
+    radial-gradient(ellipse 1150px 675px at 50% 50%, transparent 0%, transparent 79.3%, rgba(255, 255, 255, 0.03) 79.5%, rgba(255, 255, 255, 0.03) 80%, transparent 80.2%),
+    radial-gradient(ellipse 1050px 625px at 50% 50%, transparent 0%, transparent 79.3%, rgba(255, 255, 255, 0.03) 79.5%, rgba(255, 255, 255, 0.03) 80%, transparent 80.2%),
+    radial-gradient(ellipse 950px 575px at 50% 50%, transparent 0%, transparent 79.3%, rgba(255, 255, 255, 0.03) 79.5%, rgba(255, 255, 255, 0.03) 80%, transparent 80.2%),
+    radial-gradient(ellipse 850px 525px at 50% 50%, transparent 0%, transparent 79.3%, rgba(255, 255, 255, 0.03) 79.5%, rgba(255, 255, 255, 0.03) 80%, transparent 80.2%),
+    radial-gradient(ellipse 750px 475px at 50% 50%, transparent 0%, transparent 79.3%, rgba(255, 255, 255, 0.03) 79.5%, rgba(255, 255, 255, 0.03) 80%, transparent 80.2%),
+    radial-gradient(ellipse 650px 425px at 50% 50%, transparent 0%, transparent 79.3%, rgba(255, 255, 255, 0.03) 79.5%, rgba(255, 255, 255, 0.03) 80%, transparent 80.2%),
+    radial-gradient(ellipse 550px 375px at 50% 50%, transparent 0%, transparent 79.3%, rgba(255, 255, 255, 0.03) 79.5%, rgba(255, 255, 255, 0.03) 80%, transparent 80.2%),
+    radial-gradient(ellipse 450px 325px at 50% 50%, transparent 0%, transparent 79.3%, rgba(255, 255, 255, 0.03) 79.5%, rgba(255, 255, 255, 0.03) 80%, transparent 80.2%),
+    radial-gradient(ellipse 350px 275px at 50% 50%, transparent 0%, transparent 79.3%, rgba(255, 255, 255, 0.03) 79.5%, rgba(255, 255, 255, 0.03) 80%, transparent 80.2%),
+    radial-gradient(ellipse 250px 225px at 50% 50%, transparent 0%, transparent 79.3%, rgba(255, 255, 255, 0.03) 79.5%, rgba(255, 255, 255, 0.03) 80%, transparent 80.2%),
+    
+    /* Peak area - summit (brightest) */
+    radial-gradient(ellipse 150px 125px at 50% 50%, transparent 0%, transparent 78%, rgba(255, 255, 255, 0.07) 79%, rgba(255, 255, 255, 0.07) 81%, transparent 82%),
+    radial-gradient(ellipse 75px 65px at 50% 50%, transparent 0%, transparent 77%, rgba(255, 255, 255, 0.08) 78%, rgba(255, 255, 255, 0.08) 82%, transparent 83%)
+  `,
+  zIndex: 0,
+}}}>
+          {/* Floating Header */}
+<Box sx={{ 
+  position: 'sticky', 
+  top: 16, 
+  zIndex: 100, 
+  px: 3,
+  py: 1,
+}}>
+  <Paper 
+    elevation={0}
+    sx={{ 
+      background: 'rgba(255, 255, 255, 0.1)', 
+      backdropFilter: 'blur(20px)',
+      border: '1px solid rgba(255, 255, 255, 0.2)',
+      borderRadius: 3,
+      px: 3,
+      py: 1.5,
+    }}
+  >
+    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+        <IconButton 
+          onClick={() => setCurrentPage('home')}
+          sx={{ 
+            mr: 2,
+            background: 'rgba(255, 255, 255, 0.1)',
+            color: 'white',
+            '&:hover': { background: 'rgba(255, 255, 255, 0.2)' }
+          }}
+        >
+          <HomeIcon />
+        </IconButton>
+        <Typography variant="h6" sx={{ fontWeight: 700, color: 'white', mr: 1 }}>
+          Snow Report
+        </Typography>
+        <Chip 
+          label="BETA" 
+          size="small" 
+          sx={{ 
+            background: 'rgba(237, 137, 54, 0.2)',
+            color: '#ed8936',
+            fontWeight: 600,
+            fontSize: '0.7rem'
+          }} 
+        />
+      </Box>
+
+      {/* Minimal Area Selector */}
+      <Button
+        onClick={handleMenuOpen}
+        endIcon={<KeyboardArrowDown />}
+        sx={{ 
+          color: 'white',
+          background: 'rgba(255, 255, 255, 0.1)',
+          '&:hover': { background: 'rgba(255, 255, 255, 0.2)' },
+          borderRadius: 2,
+          px: 2,
+          py: 1
+        }}
+      >
+        <Box sx={{ textAlign: 'left' }}>
+          <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.85rem' }}>
+            {selectedArea.name}
+          </Typography>
+          <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.7rem' }}>
+            {selectedArea.elevation}
+          </Typography>
+        </Box>
+      </Button>
+    </Box>
+  </Paper>
+</Box>
 
           {/* Hero Section */}
           <Container maxWidth="lg" sx={{ pt: 8, pb: 4 }}>
             <Fade in timeout={1000}>
-              <Box textAlign="center" mb={8}>
+              <Box textAlign="center" mb={12}>
                 <Typography 
                   variant="h1" 
                   sx={{ 
@@ -313,7 +420,7 @@ function SnowReportApp() {
                     variant="h1" 
                     sx={{ 
                       fontSize: 'inherit',
-                      background: 'linear-gradient(45deg, #770e0eff, #ee4e4eff)',
+                      background: 'linear-gradient(45deg, #e6fffa, #b2f5ea)',
                       backgroundClip: 'text',
                       WebkitBackgroundClip: 'text',
                       WebkitTextFillColor: 'transparent',
@@ -351,7 +458,7 @@ function SnowReportApp() {
             </Fade>
 
             {/* Area Cards */}
-            <Grid container spacing={4} mb={8}>
+            <Grid container spacing={6} mb={12}>
               {Object.values(SkiArea).map((area, index) => (
                 <Grid item xs={12} md={4} key={area.name}>
                   <Fade in timeout={1000 + index * 200}>
@@ -367,7 +474,7 @@ function SnowReportApp() {
                       <CardMedia
                         sx={{
                           height: 200,
-                          background: 'linear-gradient(45deg, #275332ff, #09b64bff)',
+                          background: 'linear-gradient(45deg, #275332ff, #38a169)',
                           position: 'relative',
                           display: 'flex',
                           alignItems: 'flex-end',
@@ -415,13 +522,13 @@ function SnowReportApp() {
                   <Typography variant="h4" textAlign="center" mb={4} sx={{ fontWeight: 600 }}>
                     Why Choose Snow Report?
                   </Typography>
-                  <Grid container spacing={4}>
+                  <Grid container spacing={6}>
                     <Grid item xs={12} md={4} textAlign="center">
                       <Box sx={{ 
                         width: 80, 
                         height: 80, 
                         borderRadius: 3, 
-                        background: 'linear-gradient(45deg, #F0F8FF, #E6F3FF)',
+                        background: 'linear-gradient(45deg, #e6fffa, #b2f5ea)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -442,7 +549,7 @@ function SnowReportApp() {
                         width: 80, 
                         height: 80, 
                         borderRadius: 3, 
-                        background: 'linear-gradient(45deg, #F0FFF0, #E6FFE6)',
+                        background: 'linear-gradient(45deg, #fef5e7, #fed7aa)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -463,7 +570,7 @@ function SnowReportApp() {
                         width: 80, 
                         height: 80, 
                         borderRadius: 3, 
-                        background: 'linear-gradient(45deg, #FFF8DC, #F5E6D3)',
+                        background: 'linear-gradient(45deg, #f0f9ff, #bae6fd)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -488,7 +595,7 @@ function SnowReportApp() {
           {/* Footer */}
           <Box sx={{ background: 'rgba(0,0,0,0.8)', color: 'white', mt: 8, py: 6 }}>
             <Container maxWidth="lg">
-              <Grid container spacing={4}>
+              <Grid container spacing={6}>
                 <Grid item xs={12} md={6}>
                   <Typography variant="h6" mb={3} sx={{ fontWeight: 600 }}>
                     Questions or comments? Get in touch:
@@ -570,7 +677,8 @@ function SnowReportApp() {
       <CssBaseline />
       <Box sx={{ flexGrow: 1, minHeight: '100vh' }}>
         {/* Header */}
-        <AppBar position="sticky" sx={{ backgroundColor: 'background.paper', color: 'text.primary' }} elevation={1}>
+        <AppBar position="sticky" sx={{ backgroundColor: 'background.paper', 
+          color: 'text.primary', background: 'rgba(255, 255, 255, 0.95)', backdropFilter: 'blur(12px)' }} elevation={1}>
           <Toolbar>
             <IconButton 
               onClick={() => setCurrentPage('home')}
