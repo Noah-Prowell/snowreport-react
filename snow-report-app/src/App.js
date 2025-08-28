@@ -444,7 +444,7 @@ function SnowReportApp() {
                     px: 4, 
                     py: 2, 
                     fontSize: '1.1rem',
-                    background: 'linear-gradient(45deg, #770e0eff, #ee4e4eff)',
+                    background: 'linear-gradient(45deg, #ed8936, #f6ad55)',
                     boxShadow: '0 8px 25px rgba(0,0,0,0.3)',
                     '&:hover': {
                       transform: 'translateY(-2px)',
@@ -538,7 +538,7 @@ function SnowReportApp() {
                         <AcUnit sx={{ fontSize: 32, color: 'primary.main' }} />
                       </Box>
                       <Typography variant="h6" mb={2} sx={{ fontWeight: 600 }}>
-                        Real-time Data
+                        Real-Time Data
                       </Typography>
                       <Typography color="text.secondary">
                         Direct access to NOAA weather stations for the most accurate, up-to-date conditions.
