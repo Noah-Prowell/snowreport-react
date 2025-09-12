@@ -57,6 +57,12 @@ import {
 } from '@mui/icons-material';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
 import HomePage from './components/HomePage';
+import DataHeader from './components/DataHeader';
+import DataControls from './components/DataControls';
+import SnowDepthChart from './components/SnowDepthChart';
+import PrecipitationChart from './components/PrecipitationChart';
+import CombinedChart from './components/CombinedChart';
+import DataTable from './components/DataTable';
 // Create a professional theme
 // Create a mountain/ski themed color palette
 const theme = createTheme({
@@ -182,16 +188,18 @@ components: {
 
 const SkiArea = {
   GRANBY: { id: 'GHCND:USS0005K14S', name: 'Granby', elevation: '8,280 ft' },
-  JONES_PASS: { id: 'GHCND:USS0005K29S', name: 'Jones Pass', elevation: '12,451 ft' },
-  LOVELAND: { id: 'GHCND:USS0005K24S', name: 'Loveland Pass', elevation: '11,990 ft' }
+  JONES_PASS: { id: 'GHCND:USS0005K21S', name: 'Jones Pass', elevation: '12,451 ft' },
+  LOVELAND: { id: 'GHCND:USS0005K05S', name: 'Loveland Pass', elevation: '11,990 ft' },
+  STEVENS_PASS: {id: 'GHCND:USS0021B01S', name: 'Stevens Pass', elevation:'4, 016 ft'},
+  JACKSON_HOLE: {id: 'GHCND:USW00024166', name: 'Jackson Hole', elevation: '6, 419 ft'}
 };
 
 
 
 function SnowReportApp() {
   const [selectedArea, setSelectedArea] = useState(SkiArea.GRANBY);
-  const [startDate, setStartDate] = useState('2024-01-07');
-  const [endDate, setEndDate] = useState('2024-01-14');
+  const [startDate, setStartDate] = useState('2025-01-07');
+  const [endDate, setEndDate] = useState('2025-01-14');
   const [snowData, setSnowData] = useState([]);
   const [precipData, setPrecipData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -294,53 +302,15 @@ if (currentPage === 'home') {
       <CssBaseline />
       <Box sx={{ flexGrow: 1, minHeight: '100vh' }}>
         {/* Header */}
-        <AppBar position="sticky" sx={{ backgroundColor: 'background.paper', 
-          color: 'text.primary', background: 'rgba(255, 255, 255, 0.95)', backdropFilter: 'blur(12px)' }} elevation={1}>
-          <Toolbar>
-            <IconButton 
-              onClick={() => setCurrentPage('home')}
-              sx={{ mr: 2 }}
-            >
-              <HomeIcon />
-            </IconButton>
-            <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
-              <Box sx={{ 
-                width: 32, 
-                height: 32, 
-                borderRadius: 2, 
-                background: 'linear-gradient(45deg, #1976d2, #26a69a)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                mr: 2
-              }}>
-                <Mountain sx={{ color: 'white', fontSize: 20 }} />
-              </Box>
-              <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                Snow Report
-              </Typography>
-              <Typography variant="body2" sx={{ color: 'text.secondary', ml: 1, display: { xs: 'none', md: 'block' } }}>
-                • Professional backcountry conditions
-              </Typography>
-            </Box>
-
-            {/* Area Selector */}
-            <Button
-              onClick={handleMenuOpen}
-              endIcon={<KeyboardArrowDown />}
-              startIcon={<MapPin />}
-              variant="outlined"
-              sx={{ ml: 2 }}
-            >
-              <Box sx={{ textAlign: 'left' }}>
-                <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                  {selectedArea.name}
-                </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  {selectedArea.elevation}
-                </Typography>
-              </Box>
-            </Button>
+        <DataHeader 
+        selectedArea={selectedArea}
+        areas={SkiArea}
+        onHomeClick={() => setCurrentPage('home')}
+        onAreaSelect={handleAreaSelect}
+        anchorEl={anchorEl}
+        onMenuOpen={handleMenuOpen}
+        onMenuClose={handleMenuClose}
+        />
             
             <Menu
               anchorEl={anchorEl}
@@ -364,52 +334,19 @@ if (currentPage === 'home') {
                 </MenuItem>
               ))}
             </Menu>
-          </Toolbar>
-        </AppBar>
 
         {/* Main Content */}
         <Container maxWidth="xl" sx={{ py: 3 }}>
           {/* Controls */}
-          <Paper elevation={0} sx={{ p: 3, mb: 3, border: 1, borderColor: 'divider' }}>
-            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, justifyContent: 'space-between', alignItems: { md: 'center' }, gap: 2 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <Thermometer sx={{ color: 'primary.main', mr: 1 }} />
-                <Typography variant="h5" sx={{ fontWeight: 600 }}>
-                  {selectedArea.name} Conditions
-                </Typography>
-              </Box>
-              
-              <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2, alignItems: { sm: 'center' } }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Calendar sx={{ color: 'text.secondary', fontSize: 20 }} />
-                  <TextField
-                    type="date"
-                    value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                    size="small"
-                    sx={{ minWidth: 150 }}
-                  />
-                  <Typography variant="body2" color="text.secondary">to</Typography>
-                  <TextField
-                    type="date"
-                    value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
-                    size="small"
-                    sx={{ minWidth: 150 }}
-                  />
-                </Box>
-                
-                <Button
-                  onClick={handleUpdateData}
-                  disabled={loading}
-                  variant="contained"
-                  startIcon={loading ? <CircularProgress size={16} /> : <RefreshIcon />}
-                >
-                  Update Data
-                </Button>
-              </Box>
-            </Box>
-          </Paper>
+          <DataControls 
+          selectedArea={selectedArea}
+          startDate={startDate}
+          endDate={endDate}
+          loading={loading}
+          onStartDateChange={setStartDate}
+          onEndDateChange={setEndDate}
+          onUpdateData={handleUpdateData}
+          />
 
           {/* Loading */}
           {loading && <LinearProgress sx={{ mb: 2 }} />}
@@ -425,260 +362,26 @@ if (currentPage === 'home') {
           {!loading && (
             <Grid container spacing={3}>
               {/* Snow Depth Chart */}
-              <Grid item xs={12} lg={6}>
-                <Card>
-                  <CardContent>
-                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <AcUnit sx={{ color: 'primary.main', mr: 1 }} />
-                        <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                          Snow Depth
-                        </Typography>
-                      </Box>
-                      <Chip 
-                        label={`${snowData.length} data points`} 
-                        size="small" 
-                        color="primary" 
-                        variant="outlined" 
-                      />
-                    </Box>
-                    
-                    <Box sx={{ height: 320 }}>
-                      <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart data={snowData}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                          <XAxis 
-                            dataKey="formattedDate" 
-                            stroke="#666"
-                            fontSize={12}
-                            tick={{ fill: '#666' }}
-                          />
-                          <YAxis 
-                            stroke="#666"
-                            fontSize={12}
-                            tick={{ fill: '#666' }}
-                            label={{ value: 'Inches', angle: -90, position: 'insideLeft' }}
-                          />
-                          <Tooltip 
-                            contentStyle={{ 
-                              backgroundColor: '#fff', 
-                              border: '1px solid #e0e0e0',
-                              borderRadius: '8px',
-                              boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
-                            }}
-                          />
-                          <Area
-                            type="monotone"
-                            dataKey="value"
-                            stroke="#1976d2"
-                            strokeWidth={2}
-                            fill="#1976d2"
-                            fillOpacity={0.1}
-                          />
-                        </AreaChart>
-                      </ResponsiveContainer>
-                    </Box>
-                  </CardContent>
-                </Card>
-              </Grid>
+              <SnowDepthChart
+              snowData={snowData}
+              />
 
               {/* Precipitation Chart */}
-              <Grid item xs={12} lg={6}>
-                <Card>
-                  <CardContent>
-                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <CloudSnow sx={{ color: 'secondary.main', mr: 1 }} />
-                        <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                          Precipitation
-                        </Typography>
-                      </Box>
-                      <Chip 
-                        label={`${precipData.length} data points`} 
-                        size="small" 
-                        color="secondary" 
-                        variant="outlined" 
-                      />
-                    </Box>
-                    
-                    <Box sx={{ height: 320 }}>
-                      <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart data={precipData}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                          <XAxis 
-                            dataKey="formattedDate" 
-                            stroke="#666"
-                            fontSize={12}
-                            tick={{ fill: '#666' }}
-                          />
-                          <YAxis 
-                            stroke="#666"
-                            fontSize={12}
-                            tick={{ fill: '#666' }}
-                            label={{ value: 'Inches', angle: -90, position: 'insideLeft' }}
-                          />
-                          <Tooltip 
-                            contentStyle={{ 
-                              backgroundColor: '#fff', 
-                              border: '1px solid #e0e0e0',
-                              borderRadius: '8px',
-                              boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
-                            }}
-                          />
-                          <Area
-                            type="monotone"
-                            dataKey="value"
-                            stroke="#26a69a"
-                            strokeWidth={2}
-                            fill="#26a69a"
-                            fillOpacity={0.1}
-                          />
-                        </AreaChart>
-                      </ResponsiveContainer>
-                    </Box>
-                  </CardContent>
-                </Card>
-              </Grid>
+              <PrecipitationChart
+              precipData={precipData}
+              />
 
               {/* Combined Chart */}
-              <Grid item xs={12}>
-                <Card>
-                  <CardContent>
-                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <Timeline sx={{ color: 'success.main', mr: 1 }} />
-                        <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                          Combined Analysis
-                        </Typography>
-                      </Box>
-                      <Chip 
-                        label="Dual axis chart" 
-                        size="small" 
-                        color="success" 
-                        variant="outlined" 
-                      />
-                    </Box>
-                    
-                    <Box sx={{ height: 400 }}>
-                      <ResponsiveContainer width="100%" height="100%">
-                        <LineChart data={snowData.map((item, index) => ({
-                          ...item,
-                          precipitation: precipData[index]?.value || 0
-                        }))}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                          <XAxis 
-                            dataKey="formattedDate" 
-                            stroke="#666"
-                            fontSize={12}
-                            tick={{ fill: '#666' }}
-                          />
-                          <YAxis 
-                            yAxisId="snow"
-                            stroke="#666"
-                            fontSize={12}
-                            tick={{ fill: '#666' }}
-                            label={{ value: 'Snow Depth (in)', angle: -90, position: 'insideLeft' }}
-                          />
-                          <YAxis 
-                            yAxisId="precip"
-                            orientation="right"
-                            stroke="#666"
-                            fontSize={12}
-                            tick={{ fill: '#666' }}
-                            label={{ value: 'Precipitation (in)', angle: 90, position: 'insideRight' }}
-                          />
-                          <Tooltip 
-                            contentStyle={{ 
-                              backgroundColor: '#fff', 
-                              border: '1px solid #e0e0e0',
-                              borderRadius: '8px',
-                              boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
-                            }}
-                          />
-                          <Line
-                            yAxisId="snow"
-                            type="monotone"
-                            dataKey="value"
-                            stroke="#1976d2"
-                            strokeWidth={3}
-                            dot={{ fill: '#1976d2', strokeWidth: 2, r: 4 }}
-                            name="Snow Depth"
-                          />
-                          <Line
-                            yAxisId="precip"
-                            type="monotone"
-                            dataKey="precipitation"
-                            stroke="#26a69a"
-                            strokeWidth={3}
-                            dot={{ fill: '#26a69a', strokeWidth: 2, r: 4 }}
-                            name="Precipitation"
-                          />
-                        </LineChart>
-                      </ResponsiveContainer>
-                    </Box>
-                  </CardContent>
-                </Card>
-              </Grid>
+              <CombinedChart 
+              precipData={precipData}
+              snowData={snowData}
+              />
 
               {/* Data Table */}
-              <Grid item xs={12}>
-                <Card>
-                  <CardContent>
-                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <TableChart sx={{ color: 'warning.main', mr: 1 }} />
-                        <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                          Raw Data
-                        </Typography>
-                      </Box>
-                      <Chip 
-                        label={`${snowData.length} records`} 
-                        size="small" 
-                        color="warning" 
-                        variant="outlined" 
-                      />
-                    </Box>
-                    
-                    <TableContainer>
-                      <Table size="small">
-                        <TableHead>
-                          <TableRow>
-                            <TableCell sx={{ fontWeight: 600 }}>Date</TableCell>
-                            <TableCell align="right" sx={{ fontWeight: 600 }}>Snow Depth (in)</TableCell>
-                            <TableCell align="right" sx={{ fontWeight: 600 }}>Precipitation (in)</TableCell>
-                            <TableCell align="right" sx={{ fontWeight: 600 }}>Daily Change</TableCell>
-                          </TableRow>
-                        </TableHead>
-                        <TableBody>
-                          {snowData.map((row, index) => {
-                            const dailyChange = index > 0 ? (row.value - snowData[index - 1].value).toFixed(1) : '—';
-                            const changeColor = parseFloat(dailyChange) > 0 ? 'success.main' : parseFloat(dailyChange) < 0 ? 'error.main' : 'text.secondary';
-                            
-                            return (
-                              <TableRow key={row.date} hover>
-                                <TableCell>{row.formattedDate}</TableCell>
-                                <TableCell align="right">{row.value.toFixed(1)}</TableCell>
-                                <TableCell align="right">{precipData[index]?.value.toFixed(2) || '0.00'}</TableCell>
-                                <TableCell align="right">
-                                  <Typography 
-                                    component="span" 
-                                    sx={{ 
-                                      color: changeColor,
-                                      fontWeight: dailyChange !== '—' ? 600 : 400
-                                    }}
-                                  >
-                                    {dailyChange !== '—' && parseFloat(dailyChange) > 0 ? '+' : ''}{dailyChange}
-                                  </Typography>
-                                </TableCell>
-                              </TableRow>
-                            );
-                          })}
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
-                  </CardContent>
-                </Card>
-              </Grid>
+              <DataTable 
+              precipData={precipData}
+              snowData={snowData}
+              />
             </Grid>
           )}
 
