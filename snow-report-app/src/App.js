@@ -60,6 +60,7 @@ import AreaGrid from './components/AreaGrid';
 import Header from './components/Header';
 import HeroSection from './components/HeroSection';
 import FeaturesSection from './components/FeaturesSection'
+import Footer from './components/Footer';
 
 // Create a professional theme
 // Create a mountain/ski themed color palette
@@ -347,83 +348,10 @@ function SnowReportApp() {
     {/* Features */}
     <FeaturesSection />
 
-          {/* Footer */}
-          <Box sx={{ background: 'rgba(0,0,0,0.8)', color: 'white', mt: 8, py: 6 }}>
-            <Container maxWidth="lg">
-              <Grid container spacing={6}>
-                <Grid item xs={12} md={6}>
-                  <Typography variant="h6" mb={3} sx={{ fontWeight: 600 }}>
-                    Questions or comments? Get in touch:
-                  </Typography>
-                  <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                    <TextField
-                      placeholder="Name"
-                      variant="outlined"
-                      size="small"
-                      sx={{ 
-                        '& .MuiOutlinedInput-root': { 
-                          backgroundColor: 'rgba(255,255,255,0.1)',
-                          color: 'white',
-                          '& fieldset': { borderColor: 'rgba(255,255,255,0.3)' },
-                          '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.5)' },
-                        },
-                        '& .MuiInputBase-input::placeholder': { color: 'rgba(255,255,255,0.7)' }
-                      }}
-                    />
-                    <TextField
-                      placeholder="Email"
-                      variant="outlined"
-                      size="small"
-                      sx={{ 
-                        '& .MuiOutlinedInput-root': { 
-                          backgroundColor: 'rgba(255,255,255,0.1)',
-                          color: 'white',
-                          '& fieldset': { borderColor: 'rgba(255,255,255,0.3)' },
-                          '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.5)' },
-                        },
-                        '& .MuiInputBase-input::placeholder': { color: 'rgba(255,255,255,0.7)' }
-                      }}
-                    />
-                    <TextField
-                      placeholder="Message"
-                      multiline
-                      rows={3}
-                      variant="outlined"
-                      size="small"
-                      sx={{ 
-                        '& .MuiOutlinedInput-root': { 
-                          backgroundColor: 'rgba(255,255,255,0.1)',
-                          color: 'white',
-                          '& fieldset': { borderColor: 'rgba(255,255,255,0.3)' },
-                          '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.5)' },
-                        },
-                        '& .MuiInputBase-input::placeholder': { color: 'rgba(255,255,255,0.7)' }
-                      }}
-                    />
-                    <Button
-                      variant="contained"
-                      sx={{ 
-                        alignSelf: 'flex-start',
-                        background: 'linear-gradient(45deg, #1976d2, #26a69a)'
-                      }}
-                    >
-                      Send Message
-                    </Button>
-                  </Box>
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <Typography variant="body1" sx={{ mb: 3, color: 'rgba(255,255,255,0.8)' }}>
-                    Snow Report provides essential weather data for backcountry enthusiasts. Built with real-time NOAA data to help you make safe, informed decisions in the mountains.
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.6)' }}>
-                    © 2024 Snow Report. All rights reserved.
-                  </Typography>
-                </Grid>
-              </Grid>
-            </Container>
-          </Box>
-        </Box>
-      </ThemeProvider>
+    {/* Footer */}
+    <Footer />
+    </Box>
+  </ThemeProvider>
     );
   }
 
