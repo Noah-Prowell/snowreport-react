@@ -57,6 +57,10 @@ import {
 } from '@mui/icons-material';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
 import AreaGrid from './components/AreaGrid';
+import Header from './components/Header';
+import HeroSection from './components/HeroSection';
+import FeaturesSection from './components/FeaturesSection'
+
 // Create a professional theme
 // Create a mountain/ski themed color palette
 const theme = createTheme({
@@ -327,215 +331,21 @@ function SnowReportApp() {
   `,
   zIndex: 0,
 }}}>
-          {/* Floating Header */}
-<Box sx={{ 
-  position: 'sticky', 
-  top: 16, 
-  zIndex: 100, 
-  px: 3,
-  py: 1,
-}}>
-  <Paper 
-    elevation={0}
-    sx={{ 
-      background: 'rgba(255, 255, 255, 0.1)', 
-      backdropFilter: 'blur(20px)',
-      border: '1px solid rgba(255, 255, 255, 0.2)',
-      borderRadius: 3,
-      px: 3,
-      py: 1.5,
-    }}
-  >
-    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-        <IconButton 
-          onClick={() => setCurrentPage('home')}
-          sx={{ 
-            mr: 2,
-            background: 'rgba(255, 255, 255, 0.1)',
-            color: 'white',
-            '&:hover': { background: 'rgba(255, 255, 255, 0.2)' }
-          }}
-        >
-          <HomeIcon />
-        </IconButton>
-        <Typography variant="h6" sx={{ fontWeight: 700, color: 'white', mr: 1 }}>
-          Snow Report
-        </Typography>
-        <Chip 
-          label="BETA" 
-          size="small" 
-          sx={{ 
-            background: 'rgba(237, 137, 54, 0.2)',
-            color: '#ed8936',
-            fontWeight: 600,
-            fontSize: '0.7rem'
-          }} 
-        />
-      </Box>
+{/* Floating Header */}
+  <Header 
+    selectedArea={selectedArea}
+    onHomeClick={() => setCurrentPage('home')}
+    onAreaMenuOpen={handleMenuOpen}
+  />
 
-      {/* Minimal Area Selector */}
-      <Button
-        onClick={handleMenuOpen}
-        endIcon={<KeyboardArrowDown />}
-        sx={{ 
-          color: 'white',
-          background: 'rgba(255, 255, 255, 0.1)',
-          '&:hover': { background: 'rgba(255, 255, 255, 0.2)' },
-          borderRadius: 2,
-          px: 2,
-          py: 1
-        }}
-      >
-        <Box sx={{ textAlign: 'left' }}>
-          <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.85rem' }}>
-            {selectedArea.name}
-          </Typography>
-          <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.7rem' }}>
-            {selectedArea.elevation}
-          </Typography>
-        </Box>
-      </Button>
-    </Box>
-  </Paper>
-</Box>
+    {/* Hero Section */}
+    <HeroSection onViewDashboard={() => setCurrentPage('data')} />
 
-          {/* Hero Section */}
-          <Container maxWidth="lg" sx={{ pt: 8, pb: 4 }}>
-            <Fade in timeout={1000}>
-              <Box textAlign="center" mb={12}>
-                <Typography 
-                  variant="h1" 
-                  sx={{ 
-                    fontSize: { xs: '2.5rem', md: '3.5rem' }, 
-                    fontWeight: 700, 
-                    mb: 3,
-                    color: 'white',
-                    textShadow: '0 2px 4px rgba(0,0,0,0.3)'
-                  }}
-                >
-                  Make Informed{' '}
-                  <Typography 
-                    component="span" 
-                    variant="h1" 
-                    sx={{ 
-                      fontSize: 'inherit',
-                      background: 'linear-gradient(45deg, #e6fffa, #b2f5ea)',
-                      backgroundClip: 'text',
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                      fontWeight: 700
-                    }}
-                  >
-                    Backcountry
-                  </Typography>
-                  <br />
-                  Decisions
-                </Typography>
-                <Typography variant="h5" sx={{ mb: 4, color: 'rgba(255,255,255,0.9)', maxWidth: '600px', mx: 'auto' }}>
-                  Real-time snow depth and precipitation data from NOAA weather stations across the US premier backcountry areas.
-                </Typography>
-                <Button
-                  variant="contained"
-                  size="large"
-                  startIcon={<DashboardIcon />}
-                  onClick={() => setCurrentPage('data')}
-                  sx={{ 
-                    px: 4, 
-                    py: 2, 
-                    fontSize: '1.1rem',
-                    background: 'linear-gradient(45deg, #ed8936, #f6ad55)',
-                    boxShadow: '0 8px 25px rgba(0,0,0,0.3)',
-                    '&:hover': {
-                      transform: 'translateY(-2px)',
-                      boxShadow: '0 12px 30px rgba(0,0,0,0.4)',
-                    }
-                  }}
-                >
-                  View Data Dashboard
-                </Button>
-              </Box>
-            </Fade>
+    {/* Area Cards */}
+    <AreaGrid areas={SkiArea} onAreaSelect={handleAreaSelect} />
 
-            {/* Area Cards */}
-            <AreaGrid areas={SkiArea} onAreaSelect={handleAreaSelect} />
-
-            {/* Features */}
-            <Fade in timeout={1500}>
-              <Card sx={{ background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(10px)' }}>
-                <CardContent sx={{ p: 4 }}>
-                  <Typography variant="h4" textAlign="center" mb={4} sx={{ fontWeight: 600 }}>
-                    Why Choose Snow Report?
-                  </Typography>
-                  <Grid container spacing={6}>
-                    <Grid item xs={12} md={4} textAlign="center">
-                      <Box sx={{ 
-                        width: 80, 
-                        height: 80, 
-                        borderRadius: 3, 
-                        background: 'linear-gradient(45deg, #e6fffa, #b2f5ea)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        mx: 'auto',
-                        mb: 2
-                      }}>
-                        <AcUnit sx={{ fontSize: 32, color: 'primary.main' }} />
-                      </Box>
-                      <Typography variant="h6" mb={2} sx={{ fontWeight: 600 }}>
-                        Real-Time Data
-                      </Typography>
-                      <Typography color="text.secondary">
-                        Direct access to NOAA weather stations for the most accurate, up-to-date conditions.
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={12} md={4} textAlign="center">
-                      <Box sx={{ 
-                        width: 80, 
-                        height: 80, 
-                        borderRadius: 3, 
-                        background: 'linear-gradient(45deg, #fef5e7, #fed7aa)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        mx: 'auto',
-                        mb: 2
-                      }}>
-                        <BarChartIcon sx={{ fontSize: 32, color: 'secondary.main' }} />
-                      </Box>
-                      <Typography variant="h6" mb={2} sx={{ fontWeight: 600 }}>
-                        Visual Analytics
-                      </Typography>
-                      <Typography color="text.secondary">
-                        Professional charts and graphs to quickly assess trends and make informed decisions.
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={12} md={4} textAlign="center">
-                      <Box sx={{ 
-                        width: 80, 
-                        height: 80, 
-                        borderRadius: 3, 
-                        background: 'linear-gradient(45deg, #f0f9ff, #bae6fd)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        mx: 'auto',
-                        mb: 2
-                      }}>
-                        <Mountain sx={{ fontSize: 32, color: '#7b1fa2' }} />
-                      </Box>
-                      <Typography variant="h6" mb={2} sx={{ fontWeight: 600 }}>
-                        By Athletes, For Athletes
-                      </Typography>
-                      <Typography color="text.secondary">
-                        Built by winter sports enthusiasts who understand what data matters most.
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                </CardContent>
-              </Card>
-            </Fade>
-          </Container>
+    {/* Features */}
+    <FeaturesSection />
 
           {/* Footer */}
           <Box sx={{ background: 'rgba(0,0,0,0.8)', color: 'white', mt: 8, py: 6 }}>
