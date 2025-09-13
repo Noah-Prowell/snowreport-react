@@ -1,0 +1,8 @@
+{
+"name": "weather-api",
+"version": "1.0.0",
+"dependencies": {
+"@azure/functions": "^3.5.1",
+"node-fetch": "^2.6.7"
+}
+}
