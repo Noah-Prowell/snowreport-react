@@ -3,60 +3,24 @@ import {
   ThemeProvider,
   createTheme,
   CssBaseline,
-  AppBar,
-  Toolbar,
   Typography,
   Container,
   Grid,
   Card,
   CardContent,
-  CardActions,
   Button,
   Box,
-  TextField,
   MenuItem,
-  Select,
-  FormControl,
-  InputLabel,
-  CircularProgress,
   Alert,
-  Paper,
-  Chip,
-  IconButton,
   Menu,
   ListItemText,
   ListItemIcon,
-  Divider,
-  Fade,
-  CardMedia,
-  LinearProgress,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow
+  LinearProgress
 } from '@mui/material';
 import { 
-  Terrain as Mountain, 
-  BarChart as BarChartIcon, 
-  Cloud as CloudSnow, 
-  CalendarToday as Calendar, 
   Refresh as RefreshIcon, 
-  LocationOn as MapPin, 
-  Thermostat as Thermometer, 
-  Home as HomeIcon, 
-  Dashboard as DashboardIcon, 
-  KeyboardArrowDown, 
-  TrendingUp, 
-  WbSunny, 
-  AcUnit,
-  Timeline,
-  Assessment,
-  TableChart
+  LocationOn as MapPin
 } from '@mui/icons-material';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
-import HomePage from './components/HomePage';
 import DataHeader from './components/DataHeader';
 import DataControls from './components/DataControls';
 import SnowDepthChart from './components/SnowDepthChart';
