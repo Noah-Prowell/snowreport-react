@@ -19,8 +19,10 @@ import {
 } from '@mui/material';
 import { 
   Refresh as RefreshIcon, 
-  LocationOn as MapPin
+  LocationOn as MapPin,
+  Cloud as CloudSnow
 } from '@mui/icons-material';
+import HomePage from './components/HomePage';
 import DataHeader from './components/DataHeader';
 import DataControls from './components/DataControls';
 import SnowDepthChart from './components/SnowDepthChart';
