@@ -173,6 +173,16 @@ function SnowReportApp() {
   const [currentPage, setCurrentPage] = useState('home');
   const [anchorEl, setAnchorEl] = useState(null);
 
+
+  // At the top of your component, add this helper
+const getApiUrl = () => {
+  // Check if we're in development (localhost)
+  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    return 'http://localhost:3001/api/weather-data';
+  }
+  // In production (Azure), use the relative path
+  return '/api/weather-data';
+};
   const fetchWeatherData = async (stationId, startDate, endDate) => {
     setLoading(true);
     setError(null);
@@ -181,7 +191,7 @@ function SnowReportApp() {
     console.log('Calling backend API...');
     
     // Call your backend server instead of NOAA directly
-    const response = await fetch('http://localhost:3001/api/weather-data', {
+    const response = await fetch(getApiUrl(), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

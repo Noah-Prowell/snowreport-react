@@ -1,16 +1,36 @@
 const fetch = require('node-fetch');
 
 module.exports = async function (context, req) {
+  // Add CORS headers
+  const corsHeaders = {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type"
+  };
+
+  // Handle preflight OPTIONS request
+  if (req.method === 'OPTIONS') {
+    context.res = {
+      status: 200,
+      headers: corsHeaders,
+      body: {}
+    };
+    return;
+  }
+
   try {
     // Get the NOAA API token from environment variables
     const NOAA_TOKEN = process.env.NOAA_API_TOKEN;
     
     if (!NOAA_TOKEN) {
+      context.log.error('NOAA API token not configured');
       context.res = {
         status: 500,
-        body: { 
-          success: false, 
-          error: 'NOAA API token not configured' 
+        headers: corsHeaders,
+        body: {
+          success: false,
+          error: 'NOAA API token not configured'
         }
       };
       return;
@@ -18,6 +38,18 @@ module.exports = async function (context, req) {
 
     // Get the data from the request body
     const { stationId, startDate, endDate } = req.body;
+    
+    if (!stationId || !startDate || !endDate) {
+      context.res = {
+        status: 400,
+        headers: corsHeaders,
+        body: {
+          success: false,
+          error: 'Missing required parameters: stationId, startDate, endDate'
+        }
+      };
+      return;
+    }
     
     context.log(`Fetching weather data for station: ${stationId}, dates: ${startDate} to ${endDate}`);
     
@@ -78,9 +110,7 @@ module.exports = async function (context, req) {
     // Send the formatted data back to your React app
     context.res = {
       status: 200,
-      headers: {
-        "Content-Type": "application/json"
-      },
+      headers: corsHeaders,
       body: {
         success: true,
         snowData: formattedSnowData,
@@ -93,13 +123,11 @@ module.exports = async function (context, req) {
     context.log.error('Error fetching NOAA data:', error);
     context.res = {
       status: 500,
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: { 
+      headers: corsHeaders,
+      body: {
         success: false,
         error: 'Failed to fetch weather data',
-        message: error.message 
+        message: error.message
       }
     };
   }
