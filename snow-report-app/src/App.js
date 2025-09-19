@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   ThemeProvider,
   createTheme,
@@ -175,7 +175,7 @@ function SnowReportApp() {
 
 
   // At the top of your component, add this helper
-const getApiUrl = () => {
+  const getApiUrl = () => {
   // Check if we're in development (localhost)
   if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
     return 'http://localhost:3001/api/weather-data';
@@ -183,11 +183,11 @@ const getApiUrl = () => {
   // In production (Azure), use the relative path
   return '/api/weather-data';
 };
-  const fetchWeatherData = async (stationId, startDate, endDate) => {
+  const fetchWeatherData = useCallback(async (stationId, startDate, endDate) => {
     setLoading(true);
     setError(null);
-    
-    try {
+  
+  try {
     console.log('Calling backend API...');
     
     // Call your backend server instead of NOAA directly
@@ -233,7 +233,7 @@ const getApiUrl = () => {
   } finally {
     setLoading(false);
   }
-};
+  }, []);
 
   useEffect(() => {
     if (currentPage === 'data') {
