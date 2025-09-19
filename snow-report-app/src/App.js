@@ -239,7 +239,7 @@ function SnowReportApp() {
     if (currentPage === 'data') {
       fetchWeatherData(selectedArea.id, startDate, endDate);
     }
-  }, [selectedArea, startDate, endDate, currentPage]);
+  }, [selectedArea, startDate, endDate, currentPage, fetchWeatherData]);
 
   const handleUpdateData = () => {
     fetchWeatherData(selectedArea.id, startDate, endDate);
