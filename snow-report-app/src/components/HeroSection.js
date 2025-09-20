@@ -12,7 +12,11 @@ const HeroSection = ({ onViewDashboard }) => {
 return (
 <Container maxWidth="lg" sx={{ pt: 8, pb: 4 }}>
     <Fade in timeout={1000}>
-    <Box textAlign="center" mb={12}>
+    <Box textAlign="center" mb={12}
+    sx={{ 
+        position: 'relative', 
+        zIndex: 10 // Add z-index to ensure it stays above particles
+    }}>
         <Typography 
         variant="h1" 
         sx={{ 
