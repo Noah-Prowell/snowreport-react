@@ -1,19 +1,34 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
 Box, 
 Paper, 
 IconButton, 
 Typography, 
 Chip, 
-Button 
+Button,
+Menu,
+MenuItem,
+ListItemIcon,
+ListItemText
 } from '@mui/material';
-import { Home as HomeIcon, KeyboardArrowDown } from '@mui/icons-material';
+import { Home as HomeIcon, KeyboardArrowDown, LocationOn as MapPin } from '@mui/icons-material';
 
-const Header = ({ 
-selectedArea, 
-onHomeClick, 
-onAreaMenuOpen 
-}) => {
+const Header = ({ selectedArea, onHomeClick, areas, onAreaSelect }) => {
+const [anchorEl, setAnchorEl] = useState(null);
+
+const handleMenuOpen = (event) => {
+setAnchorEl(event.currentTarget);
+};
+
+const handleMenuClose = () => {
+setAnchorEl(null);
+};
+
+const handleAreaSelect = (area) => {
+onAreaSelect(area); // This will switch to the data page for that area
+setAnchorEl(null); // Close the menu
+};
+
 return (
 <Box sx={{ 
     position: 'sticky', 
@@ -62,29 +77,66 @@ return (
         </Box>
 
         {/* Area Selector */}
-        <Button
-        onClick={onAreaMenuOpen}
+    <Button
+        onClick={handleMenuOpen}
         endIcon={<KeyboardArrowDown />}
         sx={{ 
-            color: 'white',
-            background: 'rgba(255, 255, 255, 0.1)',
-            '&:hover': { background: 'rgba(255, 255, 255, 0.2)' },
-            borderRadius: 2,
-            px: 2,
-            py: 1
+        color: 'white',
+        background: 'rgba(255, 255, 255, 0.1)',
+        '&:hover': { background: 'rgba(255, 255, 255, 0.2)' },
+        borderRadius: 2,
+        px: 2,
+        py: 1
         }}
-        >
+    >
         <Box sx={{ textAlign: 'left' }}>
-            <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.85rem' }}>
+        <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.85rem' }}>
             {selectedArea.name}
-            </Typography>
-            <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.7rem' }}>
+        </Typography>
+        <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.7rem' }}>
             {selectedArea.elevation}
-            </Typography>
+        </Typography>
         </Box>
-        </Button>
-    </Box>
-    </Paper>
+    </Button>
+
+    {/* Dropdown Menu */}
+    <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
+        PaperProps={{ 
+        sx: { 
+            minWidth: 200,
+            mt: 1,
+            borderRadius: 2,
+            boxShadow: '0 8px 25px rgba(0,0,0,0.15)'
+        } 
+        }}
+    >
+        {Object.values(areas).map((area) => (
+        <MenuItem
+            key={area.name}
+            onClick={() => handleAreaSelect(area)}
+            selected={selectedArea.name === area.name}
+            sx={{
+            py: 1.5,
+            '&.Mui-selected': {
+                backgroundColor: 'rgba(26, 54, 93, 0.1)'
+            }
+            }}
+        >
+            <ListItemIcon>
+            <MapPin fontSize="small" />
+            </ListItemIcon>
+            <ListItemText 
+            primary={area.name} 
+            secondary={area.elevation}
+            />
+        </MenuItem>
+        ))}
+    </Menu>
+</Box>
+</Paper>
 </Box>
 );
 };
