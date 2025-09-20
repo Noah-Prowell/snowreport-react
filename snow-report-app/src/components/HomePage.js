@@ -8,13 +8,13 @@ import Footer from './Footer';
 import Particles from './Particles';
 
 const HomePage = ({ 
-  theme,
-  selectedArea, 
-  onHomeClick, 
-  onAreaMenuOpen, 
-  onViewDashboard, 
-  areas, 
-  onAreaSelect 
+theme,
+selectedArea, 
+onHomeClick, 
+onAboutClick, 
+onViewDashboard, 
+areas, 
+onAreaSelect 
 }) => {
 return (
 <ThemeProvider theme={theme}>
@@ -39,9 +39,9 @@ return (
     }}>
         <Particles
         particleColors={['#ffffff', '#e2e8f0', '#cbd5e1']} // Snow-like colors
-        particleCount={500} // More particles for snow effect
-        particleSpread={5}
-        speed={0.07} // Slower for gentle snowfall
+        particleCount={800} // More particles for snow effect
+        particleSpread={2}
+        speed={0.05} // Slower for gentle snowfall
         particleBaseSize={80}
         moveParticlesOnHover={true}
         alphaParticles={false} // Enable alpha for more realistic snow
@@ -57,7 +57,8 @@ return (
         areas={areas}
         onAreaSelect={onAreaSelect}
         />
-        <HeroSection onViewDashboard={onViewDashboard} />
+        <HeroSection onViewDashboard={onViewDashboard}
+        onAboutClick={onAboutClick} />
         <AreaGrid areas={areas} onAreaSelect={onAreaSelect} />
         <FeaturesSection />
         <Footer />

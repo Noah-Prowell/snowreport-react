@@ -6,9 +6,9 @@ Typography,
 Button, 
 Fade 
 } from '@mui/material';
-import { Dashboard as DashboardIcon } from '@mui/icons-material';
+import { Dashboard as DashboardIcon, Article as ArticleIcon } from '@mui/icons-material';
 
-const HeroSection = ({ onViewDashboard }) => {
+const HeroSection = ({ onViewDashboard, onAboutClick }) => {
 return (
 <Container maxWidth="lg" sx={{ pt: 8, pb: 4 }}>
     <Fade in timeout={1000}>
@@ -66,6 +66,27 @@ return (
         }}
         >
         View Data Dashboard
+        </Button>
+        {/* New About button */}
+        <Button
+            variant="contained"
+            size="large"
+            startIcon={<ArticleIcon />}
+            onClick={onAboutClick}
+            sx={{
+            ml: 2,
+            px: 4, 
+            py: 2, 
+            fontSize: '1.1rem',
+            background: 'linear-gradient(45deg, #ed8936, #f6ad55)',
+            boxShadow: '0 8px 25px rgba(0,0,0,0.3)',
+            '&:hover': {
+            transform: 'translateY(-2px)',
+            boxShadow: '0 12px 30px rgba(0,0,0,0.4)',
+            }
+            }}
+        >
+            About
         </Button>
     </Box>
     </Fade>
