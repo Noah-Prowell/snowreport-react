@@ -269,7 +269,7 @@ function SnowReportApp() {
       areas={SkiArea}
       onHomeClick={() => navigate('/')}
       onAreaSelect={handleAreaSelect}
-      onNavigateToHome={() => navigate('/')}
+      onNavigateToHome={() => navigate('/data')}
     />
   );
 
