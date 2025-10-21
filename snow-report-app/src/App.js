@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import {
   ThemeProvider,
   createTheme,
@@ -153,7 +153,7 @@ const SkiArea = {
   GRANBY: { id: 'GHCND:USS0005K14S', name: 'Granby', elevation: '8,280 ft' },
   JONES_PASS: { id: 'GHCND:USS0005K21S', name: 'Jones Pass', elevation: '12,451 ft' },
   LOVELAND: { id: 'GHCND:USS0005K05S', name: 'Loveland Pass', elevation: '11,990 ft' },
-  STEVENS_PASS: {id: 'GHCND:USS0021B01S', name: 'Stevens Pass', elevation:'4, 016 ft'},
+  STEVENS_PASS: {id: 'GHCND:USS0021B01S', name: 'Stevens Pass', elevation:'3, 950 ft'},
   JACKSON_HOLE: {id: 'GHCND:USW00024166', name: 'Jackson Hole', elevation: '6, 419 ft'}
 };
 
@@ -161,6 +161,7 @@ const SkiArea = {
 
 function SnowReportApp() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [selectedArea, setSelectedArea] = useState(SkiArea.GRANBY);
   const [startDate, setStartDate] = useState('2025-01-07');
   const [endDate, setEndDate] = useState('2025-01-14');
@@ -233,10 +234,10 @@ function SnowReportApp() {
 
   useEffect(() => {
     // Fetch data when on data page (check current path)
-    if (window.location.pathname === '/data') {
+    if (location.pathname === '/data') {
       fetchWeatherData(selectedArea.id, startDate, endDate);
     }
-  }, [selectedArea, startDate, endDate, fetchWeatherData]);
+  }, [location.pathname, selectedArea, startDate, endDate, fetchWeatherData]);
 
   const handleUpdateData = () => {
     fetchWeatherData(selectedArea.id, startDate, endDate);
