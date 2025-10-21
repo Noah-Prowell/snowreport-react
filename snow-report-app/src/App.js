@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import {
   ThemeProvider,
   createTheme,
@@ -10,16 +11,11 @@ import {
   CardContent,
   Button,
   Box,
-  MenuItem,
   Alert,
-  Menu,
-  ListItemText,
-  ListItemIcon,
   LinearProgress
 } from '@mui/material';
-import { 
-  Refresh as RefreshIcon, 
-  LocationOn as MapPin,
+import {
+  Refresh as RefreshIcon,
   Cloud as CloudSnow
 } from '@mui/icons-material';
 import HomePage from './components/HomePage';
@@ -164,6 +160,8 @@ const SkiArea = {
 
 
 function SnowReportApp() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [selectedArea, setSelectedArea] = useState(SkiArea.GRANBY);
   const [startDate, setStartDate] = useState('2025-01-07');
   const [endDate, setEndDate] = useState('2025-01-14');
@@ -171,8 +169,6 @@ function SnowReportApp() {
   const [precipData, setPrecipData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [currentPage, setCurrentPage] = useState('home');
-  const [anchorEl, setAnchorEl] = useState(null);
 
 
   // At the top of your component, add this helper
@@ -237,10 +233,11 @@ function SnowReportApp() {
   }, []);
 
   useEffect(() => {
-    if (currentPage === 'data') {
+    // Fetch data when on data page (check current path)
+    if (location.pathname === '/data') {
       fetchWeatherData(selectedArea.id, startDate, endDate);
     }
-  }, [selectedArea, startDate, endDate, currentPage, fetchWeatherData]);
+  }, [location.pathname, selectedArea, startDate, endDate, fetchWeatherData]);
 
   const handleUpdateData = () => {
     fetchWeatherData(selectedArea.id, startDate, endDate);
@@ -248,81 +245,46 @@ function SnowReportApp() {
 
   const handleAreaSelect = (area) => {
     setSelectedArea(area);
-    setAnchorEl(null);
-    setCurrentPage('data');
+    navigate('/data');
   };
 
-  const handleMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
-if (currentPage === 'about') {
-  return (
-    <AboutPage 
+  // Home Page Component
+  const HomePageRoute = () => (
+    <HomePage
       theme={theme}
       selectedArea={selectedArea}
-      areas={SkiArea}
-      onHomeClick={() => setCurrentPage('home')}
-      onAreaSelect={handleAreaSelect}
-      onNavigateToHome={() => setCurrentPage('home')}
-    />
-  );
-}
-if (currentPage === 'home') {
-  return (
-    <HomePage 
-      theme={theme}
-      selectedArea={selectedArea}
-      onHomeClick={() => setCurrentPage('home')}
-      onAreaMenuOpen={handleMenuOpen}
-      onAboutClick={() => setCurrentPage('about')}
-      onViewDashboard={() => setCurrentPage('data')}
+      onHomeClick={() => navigate('/')}
+      onAboutClick={() => navigate('/about')}
+      onViewDashboard={() => navigate('/data')}
       areas={SkiArea}
       onAreaSelect={handleAreaSelect}
     />
   );
-}
 
-  return (
+  // About Page Component
+  const AboutPageRoute = () => (
+    <AboutPage
+      theme={theme}
+      selectedArea={selectedArea}
+      areas={SkiArea}
+      onHomeClick={() => navigate('/')}
+      onAreaSelect={handleAreaSelect}
+      onNavigateToHome={() => navigate('/data')}
+    />
+  );
+
+  // Data Dashboard Component
+  const DataDashboardRoute = () => (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Box sx={{ flexGrow: 1, minHeight: '100vh' }}>
         {/* Header */}
-        <DataHeader 
+        <DataHeader
         selectedArea={selectedArea}
         areas={SkiArea}
-        onHomeClick={() => setCurrentPage('home')}
+        onHomeClick={() => navigate('/')}
         onAreaSelect={handleAreaSelect}
-        anchorEl={anchorEl}
-        onMenuOpen={handleMenuOpen}
-        onMenuClose={handleMenuClose}
         />
-            
-            <Menu
-              anchorEl={anchorEl}
-              open={Boolean(anchorEl)}
-              onClose={handleMenuClose}
-              PaperProps={{ sx: { minWidth: 200 } }}
-            >
-              {Object.values(SkiArea).map((area) => (
-                <MenuItem
-                  key={area.name}
-                  onClick={() => handleAreaSelect(area)}
-                  selected={selectedArea.name === area.name}
-                >
-                  <ListItemIcon>
-                    <MapPin fontSize="small" />
-                  </ListItemIcon>
-                  <ListItemText 
-                    primary={area.name} 
-                    secondary={area.elevation}
-                  />
-                </MenuItem>
-              ))}
-            </Menu>
 
         {/* Main Content */}
         <Container maxWidth="xl" sx={{ py: 3 }}>
@@ -399,6 +361,23 @@ if (currentPage === 'home') {
       </Box>
     </ThemeProvider>
   );
+
+  return (
+    <Routes>
+      <Route path="/" element={<HomePageRoute />} />
+      <Route path="/data" element={<DataDashboardRoute />} />
+      <Route path="/about" element={<AboutPageRoute />} />
+    </Routes>
+  );
 }
 
-export default SnowReportApp;  
+// Wrapper component to provide Router
+function App() {
+  return (
+    <BrowserRouter>
+      <SnowReportApp />
+    </BrowserRouter>
+  );
+}
+
+export default App;  

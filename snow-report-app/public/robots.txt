@@ -1,6 +1,7 @@
 # https://www.robotstxt.org/robotstxt.html
 User-agent: *
 Allow: /
+Disallow: /api/
 
-Sitemap: https://brave-sky-094e7590f.2.azurestaticapps.net/sitemap.xml
-Sitemap: https://thesnowreports.org/sitemap.xml
+# Sitemap location
+Sitemap: https://yourdomain.com/sitemap.xml

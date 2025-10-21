@@ -1,49 +1,61 @@
-import React from 'react';
-import { 
-AppBar, 
-Toolbar, 
-IconButton, 
-Box, 
-Typography, 
+import React, { useState } from 'react';
+import {
+AppBar,
+Toolbar,
+IconButton,
+Box,
+Typography,
 Button,
 Menu,
 MenuItem,
 ListItemIcon,
 ListItemText
 } from '@mui/material';
-import { 
-Terrain as Mountain, 
-LocationOn as MapPin, 
+import {
+Terrain as Mountain,
+LocationOn as MapPin,
 KeyboardArrowDown,
 Home as HomeIcon
 } from '@mui/icons-material';
 
-const DataHeader = ({ 
+const DataHeader = ({
 selectedArea,
 areas,
 onHomeClick,
-onAreaSelect,
-anchorEl,
-onMenuOpen,
-onMenuClose
+onAreaSelect
 }) => {
+const [anchorEl, setAnchorEl] = useState(null);
+
+const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+};
+
+const handleMenuClose = () => {
+    setAnchorEl(null);
+};
+
+const handleAreaSelect = (area) => {
+    onAreaSelect(area);
+    setAnchorEl(null);
+};
+
 return (
-    <AppBar position="sticky" sx={{ 
-        backgroundColor: 'background.paper', 
-        color: 'text.primary', 
-        background: 'rgba(255, 255, 255, 0.95)', 
-        backdropFilter: 'blur(12px)' 
+    <AppBar position="sticky" sx={{
+        backgroundColor: 'background.paper',
+        color: 'text.primary',
+        background: 'rgba(255, 255, 255, 0.95)',
+        backdropFilter: 'blur(12px)'
     }} elevation={1}>
         <Toolbar>
         <IconButton onClick={onHomeClick} sx={{ mr: 2 }}>
             <HomeIcon />
         </IconButton>
-        
+
         <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
-            <Box sx={{ 
-            width: 32, 
-            height: 32, 
-            borderRadius: 2, 
+            <Box sx={{
+            width: 32,
+            height: 32,
+            borderRadius: 2,
             background: 'linear-gradient(45deg, #1976d2, #26a69a)',
             display: 'flex',
             alignItems: 'center',
@@ -55,10 +67,10 @@ return (
             <Typography variant="h6" sx={{ fontWeight: 700 }}>
             Snow Report
             </Typography>
-            <Typography variant="body2" sx={{ 
-            color: 'text.secondary', 
-            ml: 1, 
-            display: { xs: 'none', md: 'block' } 
+            <Typography variant="body2" sx={{
+            color: 'text.secondary',
+            ml: 1,
+            display: { xs: 'none', md: 'block' }
             }}>
             • Professional backcountry conditions
             </Typography>
@@ -66,7 +78,7 @@ return (
 
         {/* Area Selector */}
         <Button
-            onClick={onMenuOpen}
+            onClick={handleMenuOpen}
             endIcon={<KeyboardArrowDown />}
             startIcon={<MapPin />}
             variant="outlined"
@@ -81,24 +93,24 @@ return (
             </Typography>
             </Box>
         </Button>
-        
+
         <Menu
             anchorEl={anchorEl}
             open={Boolean(anchorEl)}
-            onClose={onMenuClose}
-            PaperProps={{ sx: { minWidth: 200 } }}
+            onClose={handleMenuClose}
+            slotProps={{ paper: { sx: { minWidth: 200 } } }}
         >
             {Object.values(areas).map((area) => (
             <MenuItem
                 key={area.name}
-                onClick={() => onAreaSelect(area)}
+                onClick={() => handleAreaSelect(area)}
                 selected={selectedArea.name === area.name}
             >
                 <ListItemIcon>
                 <MapPin fontSize="small" />
                 </ListItemIcon>
-                <ListItemText 
-                primary={area.name} 
+                <ListItemText
+                primary={area.name}
                 secondary={area.elevation}
                 />
             </MenuItem>
