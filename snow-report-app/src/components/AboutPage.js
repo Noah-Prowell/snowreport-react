@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {} from 'react';
 import {
   Typography,
   Container,
@@ -23,12 +23,11 @@ import {
   Cloud as CloudSnow,
   Analytics as AnalyticsIcon,
   TrendingUp as TrendingUpIcon,
-  Timeline as TimelineIcon,
   Storage as StorageIcon,
   Speed as SpeedIcon,
   ShowChart as ShowChartIcon
 } from '@mui/icons-material';
-import Carousel from './Carousel'
+// import Carousel from './Carousel'
 
 const AboutPage = ({ onNavigateToHome }) => {
   const theme = useTheme();
