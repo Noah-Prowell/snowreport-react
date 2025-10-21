@@ -28,6 +28,7 @@ import {
   Speed as SpeedIcon,
   ShowChart as ShowChartIcon
 } from '@mui/icons-material';
+import Carousel from './Carousel'
 
 const AboutPage = ({ onNavigateToHome }) => {
   const theme = useTheme();
@@ -698,7 +699,61 @@ const AboutPage = ({ onNavigateToHome }) => {
             </Grid>
           </Grid>
         </Box>
+        <Divider sx={{ my: 8 }} />
 
+        {/* Photo Carousel Section */}
+        {/* <Box sx={{ mb: 10 }}>
+          <Typography
+            variant="h3"
+            component="h2"
+            gutterBottom
+            textAlign="center"
+            sx={{ fontWeight: 700, mb: 1 }}
+          >
+            Mountain Moments
+          </Typography>
+          <Typography
+            variant="body1"
+            color="text.secondary"
+            textAlign="center"
+            sx={{ mb: 6, maxWidth: 600, mx: 'auto' }}
+          >
+            Photos from the field where data science meets mountain adventures
+          </Typography>
+
+          <Box sx={{ display: 'flex', justifyContent: 'center', minHeight: '550px', py: 4 }}>
+            <Carousel
+              items={[
+                {
+                  title: 'Mountain Research',
+                  description: 'Collecting snow data in the backcountry',
+                  id: 1,
+                  image: '/photo1.jpg' // Replace with your actual photo filename
+                },
+                {
+                  title: 'Peak Conditions',
+                  description: 'Analyzing snowpack and weather patterns',
+                  id: 2,
+                  image: '/photo2.jpg' // Replace with your actual photo filename
+                },
+                {
+                  title: 'Field Work',
+                  description: 'Where passion meets data collection',
+                  id: 3,
+                  image: '/photo3.jpg' // Replace with your actual photo filename
+                }
+              ]}
+              baseWidth={400}
+              autoplay={true}
+              autoplayDelay={4000}
+              pauseOnHover={true}
+              loop={true}
+              round={false}
+            />
+          </Box>
+        </Box>
+
+        <Divider sx={{ my: 8 }} /> */}
         {/* Call to Action */}
         <Box
           textAlign="center"
