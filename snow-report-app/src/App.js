@@ -29,6 +29,7 @@ import SnowDepthChart from './components/SnowDepthChart';
 import PrecipitationChart from './components/PrecipitationChart';
 import CombinedChart from './components/CombinedChart';
 import DataTable from './components/DataTable';
+import AboutPage from './components/AboutPage';
 // Create a professional theme
 // Create a mountain/ski themed color palette
 const theme = createTheme({
@@ -258,7 +259,18 @@ function SnowReportApp() {
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
-
+if (currentPage === 'about') {
+  return (
+    <AboutPage 
+      theme={theme}
+      selectedArea={selectedArea}
+      areas={SkiArea}
+      onHomeClick={() => setCurrentPage('home')}
+      onAreaSelect={handleAreaSelect}
+      onNavigateToHome={() => setCurrentPage('home')}
+    />
+  );
+}
 if (currentPage === 'home') {
   return (
     <HomePage 
@@ -266,6 +278,7 @@ if (currentPage === 'home') {
       selectedArea={selectedArea}
       onHomeClick={() => setCurrentPage('home')}
       onAreaMenuOpen={handleMenuOpen}
+      onAboutClick={() => setCurrentPage('about')}
       onViewDashboard={() => setCurrentPage('data')}
       areas={SkiArea}
       onAreaSelect={handleAreaSelect}
