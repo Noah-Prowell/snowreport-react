@@ -156,7 +156,7 @@ const SkiArea = {
   GRANBY: { id: 'GHCND:USS0005K14S', name: 'Granby', elevation: '8,280 ft' },
   JONES_PASS: { id: 'GHCND:USS0005K21S', name: 'Jones Pass', elevation: '12,451 ft' },
   LOVELAND: { id: 'GHCND:USS0005K05S', name: 'Loveland Pass', elevation: '11,990 ft' },
-  STEVENS_PASS: {id: 'GHCND:USS0021B01S', name: 'Stevens Pass', elevation:'4, 016 ft'},
+  STEVENS_PASS: {id: 'GHCND:USS0021B01S', name: 'Stevens Pass', elevation:'3, 950 ft'},
   JACKSON_HOLE: {id: 'GHCND:USW00024166', name: 'Jackson Hole', elevation: '6, 419 ft'}
 };
 
