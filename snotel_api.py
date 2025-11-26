@@ -1,6 +1,6 @@
 """
-SNOTEL API Client for Snow Depth Prediction
-Integrates with USDA AWDB REST API to fetch snow and weather data
+SNOTEL API Client
+A clean, reusable API client for fetching snow and weather data from USDA AWDB REST API
 """
 
 import requests
@@ -14,6 +14,12 @@ class SNOTELClient:
     Client for interacting with the SNOTEL AWDB REST API
 
     API Documentation: https://wcc.sc.egov.usda.gov/awdbRestApi/swagger-ui/index.html
+
+    Example:
+        >>> from snotel_api import SNOTELClient
+        >>> client = SNOTELClient()
+        >>> data = client.get_recent_data("602:CO:SNTL", ["SNWD", "WTEQ"], days=30)
+        >>> df = client.to_dataframe(data)
     """
 
     BASE_URL = "https://wcc.sc.egov.usda.gov/awdbRestApi/services/v1"
@@ -50,8 +56,14 @@ class SNOTELClient:
         'SRADV': 'Solar Radiation'
     }
 
-    def __init__(self):
-        """Initialize the SNOTEL API client"""
+    def __init__(self, timeout: int = 30):
+        """
+        Initialize the SNOTEL API client
+
+        Args:
+            timeout: Request timeout in seconds (default: 30)
+        """
+        self.timeout = timeout
         self.session = requests.Session()
         self.session.headers.update({
             'accept': 'application/json',
@@ -75,7 +87,7 @@ class SNOTELClient:
         Fetch data from a SNOTEL station
 
         Args:
-            station_triplet: Station identifier (e.g., "WA:SNTL" or "302:WA:SNTL")
+            station_triplet: Station identifier (e.g., "602:CO:SNTL")
             elements: Single element code or list of element codes (e.g., "SNWD", ["SNWD", "PREC"])
             duration: Data duration - DAILY, HOURLY, SEMIMONTHLY, etc.
             period_ref: Period reference - START, END, CENTRAL
@@ -88,6 +100,9 @@ class SNOTELClient:
 
         Returns:
             JSON response from API
+
+        Raises:
+            requests.HTTPError: If the API request fails
         """
         # Convert elements to comma-separated string
         if isinstance(elements, list):
@@ -115,7 +130,7 @@ class SNOTELClient:
 
         # Make request
         url = f"{self.BASE_URL}/data"
-        response = self.session.get(url, params=params)
+        response = self.session.get(url, params=params, timeout=self.timeout)
         response.raise_for_status()
 
         return response.json()
@@ -219,7 +234,7 @@ class SNOTELClient:
             params['maxElevation'] = max_elevation
 
         url = f"{self.BASE_URL}/stations"
-        response = self.session.get(url, params=params)
+        response = self.session.get(url, params=params, timeout=self.timeout)
         response.raise_for_status()
 
         return response.json()
@@ -232,10 +247,10 @@ class SNOTELClient:
             station_triplet: Station identifier
 
         Returns:
-            Station metadata
+            Station metadata including elevation, location, etc.
         """
         url = f"{self.BASE_URL}/stations/{station_triplet}"
-        response = self.session.get(url)
+        response = self.session.get(url, timeout=self.timeout)
         response.raise_for_status()
 
         return response.json()
@@ -257,7 +272,9 @@ class SNOTELClient:
             station_id = station_data.get('stationTriplet', 'Unknown')
 
             for element_data in station_data.get('data', []):
-                element = element_data.get('element', 'Unknown')
+                # Element code is nested in stationElement object
+                station_element = element_data.get('stationElement', {})
+                element = station_element.get('elementCode', element_data.get('element', 'Unknown'))
 
                 for value_obj in element_data.get('values', []):
                     date = value_obj.get('date')
@@ -287,7 +304,8 @@ class SNOTELClient:
     def get_all_monitored_stations_data(
         self,
         elements: Union[str, List[str]],
-        days: int = 30
+        days: int = 30,
+        verbose: bool = True
     ) -> pd.DataFrame:
         """
         Get data for all monitored ski resort stations
@@ -295,6 +313,7 @@ class SNOTELClient:
         Args:
             elements: Element code(s) to retrieve
             days: Number of days to retrieve
+            verbose: Print progress messages
 
         Returns:
             Combined DataFrame with all station data
@@ -303,27 +322,34 @@ class SNOTELClient:
 
         for station_id, station_name in self.STATIONS.items():
             try:
-                print(f"Fetching data for {station_name} ({station_id})...")
+                if verbose:
+                    print(f"Fetching data for {station_name} ({station_id})...")
+
                 data = self.get_recent_data(
                     station_triplet=station_id,
                     elements=elements,
                     days=days
                 )
                 df = self.to_dataframe(data)
+
                 if not df.empty:
                     df['station_name'] = station_name
                     all_data.append(df)
             except Exception as e:
-                print(f"Error fetching data for {station_name}: {e}")
+                if verbose:
+                    print(f"Error fetching data for {station_name}: {e}")
 
         if all_data:
             return pd.concat(all_data, ignore_index=True)
         else:
             return pd.DataFrame()
 
-    def get_monitored_station_summary(self) -> pd.DataFrame:
+    def get_monitored_station_summary(self, verbose: bool = False) -> pd.DataFrame:
         """
         Get current conditions summary for all monitored stations
+
+        Args:
+            verbose: Print progress messages
 
         Returns:
             DataFrame with latest conditions for each station
@@ -332,6 +358,9 @@ class SNOTELClient:
 
         for station_id, station_name in self.STATIONS.items():
             try:
+                if verbose:
+                    print(f"Fetching summary for {station_name}...")
+
                 data = self.get_current_conditions(station_id)
                 df = self.to_dataframe(data)
 
@@ -341,74 +370,53 @@ class SNOTELClient:
                     latest['station_id'] = station_id
                     summary_data.append(latest)
             except Exception as e:
-                print(f"Error fetching summary for {station_name}: {e}")
+                if verbose:
+                    print(f"Error fetching summary for {station_name}: {e}")
 
         return pd.DataFrame(summary_data)
 
+    def get_historical_data(
+        self,
+        station_triplet: str,
+        elements: Union[str, List[str]],
+        start_year: int,
+        end_year: Optional[int] = None
+    ) -> pd.DataFrame:
+        """
+        Get historical data for multiple years
 
-# Example usage
-if __name__ == "__main__":
-    # Initialize client
-    client = SNOTELClient()
+        Args:
+            station_triplet: Station identifier
+            elements: Element code(s)
+            start_year: Starting year
+            end_year: Ending year (defaults to current year)
 
-    print("=" * 80)
-    print("SNOTEL API Client - Ski Resort Snow Data")
-    print("=" * 80)
+        Returns:
+            DataFrame with historical data
+        """
+        if end_year is None:
+            end_year = datetime.now().year
 
-    # Example 1: List all monitored stations
-    print("\n" + "=" * 80)
-    print("Monitored Ski Resort Stations")
-    print("=" * 80)
-    for station_id, station_name in client.STATIONS.items():
-        print(f"  {station_name}: {station_id}")
+        begin_date = f"{start_year}-01-01"
+        end_date = f"{end_year}-12-31"
 
-    # Example 2: Get current conditions summary for all monitored stations
-    print("\n" + "=" * 80)
-    print("Current Conditions Summary")
-    print("=" * 80)
-    summary = client.get_monitored_station_summary()
-    if not summary.empty:
-        print("\n", summary.to_string(index=False))
-    else:
-        print("No data available")
+        data = self.get_station_data(
+            station_triplet=station_triplet,
+            elements=elements,
+            begin_date=begin_date,
+            end_date=end_date
+        )
 
-    # Example 3: Get detailed data for a specific station
-    print("\n" + "=" * 80)
-    print("Example: Loveland Pass - 30 Day Snow Depth History")
-    print("=" * 80)
+        return self.to_dataframe(data)
 
-    loveland_data = client.get_recent_data(
-        station_triplet="602:CO:SNTL",
-        elements=['SNWD', 'WTEQ', 'PREC', 'TAVG', 'TMAX', 'TMIN'],
-        days=30
-    )
+    def close(self):
+        """Close the HTTP session"""
+        self.session.close()
 
-    df_loveland = client.to_dataframe(loveland_data)
-    if not df_loveland.empty:
-        print("\nMost recent 10 days:")
-        print(df_loveland.tail(10).to_string(index=False))
+    def __enter__(self):
+        """Context manager entry"""
+        return self
 
-        # Calculate some statistics
-        if 'SNWD' in df_loveland.columns:
-            print(f"\n30-Day Snow Depth Statistics:")
-            print(f"  Current: {df_loveland['SNWD'].iloc[-1]:.1f} inches")
-            print(f"  Average: {df_loveland['SNWD'].mean():.1f} inches")
-            print(f"  Maximum: {df_loveland['SNWD'].max():.1f} inches")
-            print(f"  Minimum: {df_loveland['SNWD'].min():.1f} inches")
-
-    # Example 4: Get all monitored stations data
-    print("\n" + "=" * 80)
-    print("Fetching All Monitored Stations (7 days)")
-    print("=" * 80)
-
-    all_stations_df = client.get_all_monitored_stations_data(
-        elements=['SNWD', 'WTEQ', 'TAVG'],
-        days=7
-    )
-
-    if not all_stations_df.empty:
-        print(f"\nTotal records retrieved: {len(all_stations_df)}")
-        print("\nSample data:")
-        print(all_stations_df.head(15).to_string(index=False))
-    else:
-        print("No data retrieved")
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """Context manager exit"""
+        self.close()
