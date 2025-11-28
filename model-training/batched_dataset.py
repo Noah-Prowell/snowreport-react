@@ -23,7 +23,8 @@ class BatchedSnowDataset(Dataset):
                  sequence_length: int = 30,
                  preprocessor: Optional[SnowDataPreprocessor] = None,
                  fit_scalers: bool = True,
-                 chunk_size: int = 10000):
+                 chunk_size: int = 10000,
+                 data_preprocessed: bool = False):
         """
         Args:
             df: Raw SNOTEL DataFrame with all stations
@@ -32,11 +33,13 @@ class BatchedSnowDataset(Dataset):
             preprocessor: Existing preprocessor (or creates new one)
             fit_scalers: Whether to fit scalers
             chunk_size: Number of records to process at a time
+            data_preprocessed: If True, assumes data already has all features calculated
         """
         self.df = df.copy()
         self.model_type = model_type
         self.sequence_length = sequence_length
         self.chunk_size = chunk_size
+        self.data_preprocessed = data_preprocessed
 
         # Initialize or use provided preprocessor
         if preprocessor is None:
@@ -60,32 +63,61 @@ class BatchedSnowDataset(Dataset):
         """
         df = self.df.copy()
 
-        # Step 1: Handle missing values
-        df = self.preprocessor.handle_missing_values(df)
+        if self.data_preprocessed:
+            # Data already has features - just define feature columns and normalize
+            print("  Using pre-processed data - skipping feature calculation")
 
-        if self.model_type == 'hybrid':
-            # Step 2: Calculate physical baseline
-            df = self.preprocessor.calculate_physical_baseline(df)
+            if self.model_type == 'plain':
+                feature_cols = [
+                    'TAVG', 'PREC', 'WSPDV', 'RHUMV', 'SRADV',
+                    'snow_presence', 'day_of_year_sin'
+                ]
+            else:  # hybrid
+                feature_cols = [
+                    'TAVG', 'PREC', 'WSPDV', 'RHUMV', 'SRADV',
+                    'snow_presence', 'day_of_year_sin',
+                    'physical_swe', 'physical_snwd', 'physical_density'
+                ]
 
-        # Step 3: Create snow presence
-        df = self.preprocessor.create_snow_presence(df)
+            # Set feature columns on preprocessor
+            if self.model_type == 'plain':
+                self.preprocessor.plain_features = feature_cols
+            else:
+                self.preprocessor.hybrid_features = feature_cols
 
-        # Step 4: Create temporal features
-        df = self.preprocessor.create_temporal_features(df)
+            # Sort by date for sequence creation
+            df = df.sort_values('date').reset_index(drop=True)
 
-        # Step 5: Create features
-        if self.model_type == 'plain':
-            df = self.preprocessor.create_plain_lstm_features(df)
-            feature_cols = self.preprocessor.plain_features
+            # Normalize features
+            df = self.preprocessor.normalize_features(df, feature_cols, fit=fit_scalers)
         else:
-            df = self.preprocessor.create_hybrid_lstm_features(df)
-            feature_cols = self.preprocessor.hybrid_features
+            # Full preprocessing pipeline
+            # Step 1: Handle missing values
+            df = self.preprocessor.handle_missing_values(df)
 
-        # Step 6: Normalize features
-        df = self.preprocessor.normalize_features(df, feature_cols, fit=fit_scalers)
+            if self.model_type == 'hybrid':
+                # Step 2: Calculate physical baseline
+                df = self.preprocessor.calculate_physical_baseline(df)
 
-        # Sort by date for sequence creation
-        df = df.sort_values('date').reset_index(drop=True)
+            # Step 3: Create snow presence
+            df = self.preprocessor.create_snow_presence(df)
+
+            # Step 4: Create temporal features
+            df = self.preprocessor.create_temporal_features(df)
+
+            # Step 5: Create features
+            if self.model_type == 'plain':
+                df = self.preprocessor.create_plain_lstm_features(df)
+                feature_cols = self.preprocessor.plain_features
+            else:
+                df = self.preprocessor.create_hybrid_lstm_features(df)
+                feature_cols = self.preprocessor.hybrid_features
+
+            # Step 6: Normalize features
+            df = self.preprocessor.normalize_features(df, feature_cols, fit=fit_scalers)
+
+            # Sort by date for sequence creation
+            df = df.sort_values('date').reset_index(drop=True)
 
         return df
 
@@ -166,7 +198,8 @@ class StationBatchedDataset(Dataset):
                  model_type: str = 'hybrid',
                  sequence_length: int = 30,
                  preprocessor: Optional[SnowDataPreprocessor] = None,
-                 fit_scalers: bool = True):
+                 fit_scalers: bool = True,
+                 data_preprocessed: bool = False):
         """
         Args:
             df: Raw SNOTEL DataFrame with multiple stations
@@ -174,11 +207,13 @@ class StationBatchedDataset(Dataset):
             sequence_length: LSTM sequence length
             preprocessor: Existing preprocessor (or creates new one)
             fit_scalers: Whether to fit scalers on first station
+            data_preprocessed: If True, assumes data already has all features calculated
         """
         self.df_raw = df
         self.model_type = model_type
         self.sequence_length = sequence_length
         self.fit_scalers = fit_scalers
+        self.data_preprocessed = data_preprocessed
 
         # Initialize or use provided preprocessor
         if preprocessor is None:
@@ -203,7 +238,8 @@ class StationBatchedDataset(Dataset):
                 model_type=model_type,
                 sequence_length=sequence_length,
                 preprocessor=self.preprocessor,
-                fit_scalers=(fit_scalers and station_idx == 0)  # Only fit on first station
+                fit_scalers=(fit_scalers and station_idx == 0),  # Only fit on first station
+                data_preprocessed=data_preprocessed
             )
 
             n_sequences = len(temp_dataset)
@@ -249,7 +285,8 @@ class StationBatchedDataset(Dataset):
                 model_type=self.model_type,
                 sequence_length=self.sequence_length,
                 preprocessor=self.preprocessor,
-                fit_scalers=False  # Never refit scalers
+                fit_scalers=False,  # Never refit scalers
+                data_preprocessed=self.data_preprocessed
             )
             self._cached_station = station
 
@@ -264,7 +301,8 @@ def create_memory_efficient_dataloaders(
     sequence_length: int = 30,
     batch_size: int = 32,
     num_workers: int = 0,
-    use_station_batching: bool = False
+    use_station_batching: bool = False,
+    data_preprocessed: bool = False
 ) -> Tuple[DataLoader, DataLoader, SnowDataPreprocessor]:
     """
     Create train and validation dataloaders with minimal memory usage
@@ -277,6 +315,7 @@ def create_memory_efficient_dataloaders(
         batch_size: Batch size for training
         num_workers: Number of DataLoader workers (0 for Windows)
         use_station_batching: Use StationBatchedDataset (even more memory efficient)
+        data_preprocessed: If True, assumes data already has all features calculated
 
     Returns:
         train_loader, val_loader, preprocessor
@@ -285,6 +324,8 @@ def create_memory_efficient_dataloaders(
     print(f"  Model type: {model_type}")
     print(f"  Sequence length: {sequence_length}")
     print(f"  Batch size: {batch_size}")
+    if data_preprocessed:
+        print(f"  Using pre-processed data (skipping feature calculations)")
 
     # Choose dataset class
     DatasetClass = StationBatchedDataset if use_station_batching else BatchedSnowDataset
@@ -296,7 +337,8 @@ def create_memory_efficient_dataloaders(
         model_type=model_type,
         sequence_length=sequence_length,
         preprocessor=None,  # Will create new one
-        fit_scalers=True
+        fit_scalers=True,
+        data_preprocessed=data_preprocessed
     )
 
     # Get the fitted preprocessor
@@ -312,7 +354,8 @@ def create_memory_efficient_dataloaders(
         model_type=model_type,
         sequence_length=sequence_length,
         preprocessor=preprocessor,  # Use fitted scalers
-        fit_scalers=False
+        fit_scalers=False,
+        data_preprocessed=data_preprocessed
     )
 
     # Create dataloaders

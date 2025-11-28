@@ -1,0 +1,22 @@
+name: snow-lstm-training
+channels:
+  - conda-forge
+  - pytorch
+  - defaults
+dependencies:
+  - python=3.10
+  - pip>=21.0
+  - numpy>=1.23.0
+  - pandas>=2.0.0
+  - scikit-learn>=1.3.0
+  - matplotlib>=3.7.0
+  - seaborn>=0.12.0
+  - pytorch>=2.0.0
+  - cpuonly  # Remove this line if using GPU compute
+  # For GPU, replace 'cpuonly' with:
+  # - pytorch-cuda=11.8  # or whatever CUDA version your compute has
+  - colorama>=0.4.6
+  - tqdm>=4.65.0
+  - pip:
+    - azureml-core>=1.50.0
+    - azureml-mlflow>=1.50.0

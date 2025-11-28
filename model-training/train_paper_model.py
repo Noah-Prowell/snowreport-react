@@ -41,7 +41,7 @@ class PaperModelTrainer:
             'dropout': 0.4,
             'learning_rate': 0.005,
             'max_epochs': 100,
-            'batch_size': 16,
+            'batch_size': 8,  # Reduced from 32 to save memory (can increase if you have more RAM)
             'sequence_length': 30,  # Assumed - check paper if specified
             'loss_function': 'MSE',
             'optimizer': 'ADAM'
@@ -72,7 +72,7 @@ class PaperModelTrainer:
 
     def train_single_model_batched(self, model_type: str, train_data: pd.DataFrame,
                                    test_station: str, fold_num: int,
-                                   total_folds: int) -> dict:
+                                   total_folds: int, data_preprocessed: bool = False) -> dict:
         """
         Train a single model using memory-efficient batched loading
 
@@ -82,6 +82,7 @@ class PaperModelTrainer:
             test_station: Station ID being held out
             fold_num: Current fold number
             total_folds: Total number of folds
+            data_preprocessed: If True, assumes data already has all features calculated
 
         Returns:
             Dictionary with results
@@ -89,6 +90,8 @@ class PaperModelTrainer:
         print(f"\n{'='*80}")
         print(f"Fold {fold_num}/{total_folds}: {model_type.upper()} LSTM (Memory-Efficient)")
         print(f"Test Station: {test_station}")
+        if data_preprocessed:
+            print("(Using pre-processed data - skipping feature calculation)")
         print(f"{'='*80}")
 
         # Create train/val split BEFORE preprocessing (90/10 by stations)
@@ -108,6 +111,7 @@ class PaperModelTrainer:
         print(f"  Validation records: {len(val_split):,}")
 
         # Create memory-efficient dataloaders
+        print(f"Creating dataloaders for {len(train_stations)} train stations, {len(val_stations)} val stations...")
         train_loader, val_loader, preprocessor = create_memory_efficient_dataloaders(
             train_df=train_split,
             val_df=val_split,
@@ -115,7 +119,8 @@ class PaperModelTrainer:
             sequence_length=self.hyperparameters['sequence_length'],
             batch_size=self.hyperparameters['batch_size'],
             num_workers=0,  # Set to 0 for Windows, 2-4 for Linux/Mac
-            use_station_batching=True  # Even more memory efficient
+            use_station_batching=False,  # False = faster startup, True = slower startup but uses less RAM
+            data_preprocessed=data_preprocessed  # Skip feature calculation if already done
         )
 
         print(f"\nDataloader Statistics:")
@@ -182,7 +187,7 @@ class PaperModelTrainer:
 
     def train_single_model(self, model_type: str, train_data: pd.DataFrame,
                           test_station: str, fold_num: int,
-                          total_folds: int) -> dict:
+                          total_folds: int, data_preprocessed: bool = False) -> dict:
         """
         Train a single model (one fold of leave-one-out CV)
 
@@ -192,6 +197,8 @@ class PaperModelTrainer:
             test_station: Station ID being held out
             fold_num: Current fold number
             total_folds: Total number of folds
+            data_preprocessed: If True, assumes data already has all features calculated
+                             and only does normalization + sequence creation
 
         Returns:
             Dictionary with results
@@ -199,25 +206,63 @@ class PaperModelTrainer:
         print(f"\n{'='*80}")
         print(f"Fold {fold_num}/{total_folds}: {model_type.upper()} LSTM")
         print(f"Test Station: {test_station}")
+        if data_preprocessed:
+            print("(Using pre-processed data - skipping feature calculation)")
         print(f"{'='*80}")
 
         # Initialize preprocessor
         preprocessor = SnowDataPreprocessor()
 
-        # Preprocess training data
-        print("Preprocessing training data...")
-        if model_type == 'plain':
-            X_train, y_train, _ = preprocessor.preprocess_for_plain_lstm(
-                train_data,
-                fit_scalers=True,
+        if data_preprocessed:
+            # Data already has features - just normalize and create sequences
+            print("Creating sequences from pre-processed data...")
+
+            # Define feature columns based on model type
+            if model_type == 'plain':
+                feature_cols = [
+                    'TAVG', 'PREC', 'WSPDV', 'RHUMV', 'SRADV',
+                    'snow_presence', 'day_of_year_sin'
+                ]
+            else:  # hybrid
+                feature_cols = [
+                    'TAVG', 'PREC', 'WSPDV', 'RHUMV', 'SRADV',
+                    'snow_presence', 'day_of_year_sin',
+                    'physical_swe', 'physical_snwd', 'physical_density'
+                ]
+
+            target_cols = ['SNWD', 'WTEQ']
+
+            # Sort by date
+            df = train_data.sort_values('date').reset_index(drop=True)
+
+            # Normalize features
+            df_normalized = preprocessor.normalize_features(
+                df, feature_cols, fit=True
+            )
+
+            # Create sequences
+            X_train, y_train = preprocessor.prepare_sequences(
+                df_normalized,
+                feature_cols,
+                target_cols,
                 sequence_length=self.hyperparameters['sequence_length']
             )
-        else:  # hybrid
-            X_train, y_train, _ = preprocessor.preprocess_for_hybrid_lstm(
-                train_data,
-                fit_scalers=True,
-                sequence_length=self.hyperparameters['sequence_length']
-            )
+
+        else:
+            # Full preprocessing pipeline
+            print("Preprocessing training data...")
+            if model_type == 'plain':
+                X_train, y_train, _ = preprocessor.preprocess_for_plain_lstm(
+                    train_data,
+                    fit_scalers=True,
+                    sequence_length=self.hyperparameters['sequence_length']
+                )
+            else:  # hybrid
+                X_train, y_train, _ = preprocessor.preprocess_for_hybrid_lstm(
+                    train_data,
+                    fit_scalers=True,
+                    sequence_length=self.hyperparameters['sequence_length']
+                )
 
         print(f"  Training sequences: {len(X_train)}")
         print(f"  Input shape: {X_train.shape}")
@@ -297,12 +342,13 @@ class PaperModelTrainer:
             'scaler_path': str(self.output_dir / scaler_filename)
         }
 
-    def run_leave_one_out_cv_batched(self, model_type: str = 'both'):
+    def run_leave_one_out_cv_batched(self, model_type: str = 'both', data_preprocessed: bool = False):
         """
         Run leave-one-out cross-validation with memory-efficient batched loading
 
         Args:
             model_type: 'plain', 'hybrid', or 'both'
+            data_preprocessed: If True, assumes data already has all features calculated
         """
         # Load data
         df = self.load_data()
@@ -314,6 +360,8 @@ class PaperModelTrainer:
         print(f"Starting Leave-One-Out Cross-Validation (Memory-Efficient)")
         print(f"Total Stations: {total_stations}")
         print(f"Model Type(s): {model_type.upper()}")
+        if data_preprocessed:
+            print("Using pre-processed data (skipping feature calculations)")
         print(f"{'='*80}")
 
         # Leave-one-out CV
@@ -338,7 +386,7 @@ class PaperModelTrainer:
             if model_type in ['plain', 'both']:
                 result_plain = self.train_single_model_batched(
                     'plain', train_data, test_station,
-                    fold_num, total_stations
+                    fold_num, total_stations, data_preprocessed
                 )
                 if result_plain:
                     self.results['plain_lstm'].append(result_plain)
@@ -347,7 +395,7 @@ class PaperModelTrainer:
             if model_type in ['hybrid', 'both']:
                 result_hybrid = self.train_single_model_batched(
                     'hybrid', train_data, test_station,
-                    fold_num, total_stations
+                    fold_num, total_stations, data_preprocessed
                 )
                 if result_hybrid:
                     self.results['hybrid_lstm'].append(result_hybrid)
@@ -361,12 +409,13 @@ class PaperModelTrainer:
 
         self.print_summary()
 
-    def run_leave_one_out_cv(self, model_type: str = 'both'):
+    def run_leave_one_out_cv(self, model_type: str = 'both', data_preprocessed: bool = False):
         """
         Run leave-one-out cross-validation
 
         Args:
             model_type: 'plain', 'hybrid', or 'both'
+            data_preprocessed: If True, assumes data already has all features calculated
         """
         # Load data
         df = self.load_data()
@@ -378,6 +427,8 @@ class PaperModelTrainer:
         print(f"Starting Leave-One-Out Cross-Validation")
         print(f"Total Stations: {total_stations}")
         print(f"Model Type(s): {model_type.upper()}")
+        if data_preprocessed:
+            print("Using pre-processed data (skipping feature calculations)")
         print(f"{'='*80}")
 
         # Leave-one-out CV
@@ -402,7 +453,7 @@ class PaperModelTrainer:
             if model_type in ['plain', 'both']:
                 result_plain = self.train_single_model(
                     'plain', train_data, test_station,
-                    fold_num, total_stations
+                    fold_num, total_stations, data_preprocessed
                 )
                 if result_plain:
                     self.results['plain_lstm'].append(result_plain)
@@ -411,7 +462,7 @@ class PaperModelTrainer:
             if model_type in ['hybrid', 'both']:
                 result_hybrid = self.train_single_model(
                     'hybrid', train_data, test_station,
-                    fold_num, total_stations
+                    fold_num, total_stations, data_preprocessed
                 )
                 if result_hybrid:
                     self.results['hybrid_lstm'].append(result_hybrid)
@@ -475,7 +526,7 @@ if __name__ == "__main__":
     print("="*80)
 
     # Configuration
-    DATA_PATH = 'training_data_2008_2024.csv'  # Your collected data
+    DATA_PATH = 'processed_training_data_08_24.csv'  # Your collected data
     OUTPUT_DIR = 'trained_models'
 
     # Check if data exists
@@ -491,13 +542,15 @@ if __name__ == "__main__":
         output_dir=OUTPUT_DIR
     )
 
-    # Run leave-one-out CV with memory-efficient batched training
-    # This avoids loading all data into memory at once
+    # Run leave-one-out CV
     # Options: 'plain', 'hybrid', or 'both'
-    trainer.run_leave_one_out_cv_batched(model_type='hybrid')
 
-    # Alternative: Use the old method if you have enough RAM
-    # trainer.run_leave_one_out_cv(model_type='hybrid')
+    # Use batched training to avoid memory errors (generates sequences on-the-fly)
+    trainer.run_leave_one_out_cv_batched(model_type='hybrid', data_preprocessed=True)
+
+    # Only use these if you have LOTS of RAM:
+    # trainer.run_leave_one_out_cv(model_type='hybrid', data_preprocessed=True)  # Pre-processed data
+    # trainer.run_leave_one_out_cv(model_type='hybrid', data_preprocessed=False)  # Raw data
 
     print("\n" + "="*80)
     print("✅ Training Complete!")

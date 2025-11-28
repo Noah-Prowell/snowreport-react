@@ -398,7 +398,7 @@ class SnowDataPreprocessor:
 if __name__ == "__main__":
     # Load your collected training data
     print("Loading training data...")
-    df = pd.read_csv('training_data_2008_2024.csv')
+    df = pd.read_csv('../training_data_2008_2024.csv')
     df['date'] = pd.to_datetime(df['date'])
 
     print(f"Total records: {len(df)}")
@@ -408,41 +408,17 @@ if __name__ == "__main__":
     # Initialize preprocessor
     preprocessor = SnowDataPreprocessor()
 
-    # Test with one station
-    print("\n" + "=" * 80)
-    print("Testing Preprocessing - Plain LSTM")
-    print("=" * 80)
 
     # Get data for one station
-    station_data = df[df['station'] == df['station'].iloc[0]].copy()
-    print(f"\nStation: {station_data['station_name'].iloc[0] if 'station_name' in station_data else 'Unknown'}")
-    print(f"Records: {len(station_data)}")
-
+    processed_df_full = []
+    for station in df['station'].unique():
+        station_data = df[df['station'] == station]
+        print(f"processing {len(station_data)} data points for station {station}")
     # Preprocess for Plain LSTM
-    X_plain, y_plain, processed_df = preprocessor.preprocess_for_plain_lstm(
-        station_data,
-        fit_scalers=True,
-        sequence_length=30
-    )
-
-    print(f"\nPlain LSTM Input shape: {X_plain.shape}")  # (samples, 30, 7)
-    print(f"Plain LSTM Output shape: {y_plain.shape}")   # (samples, 2) [SNWD, WTEQ]
-    print(f"Features: {preprocessor.plain_features}")
-
-    # Test Hybrid LSTM
-    print("\n" + "=" * 80)
-    print("Testing Preprocessing - Hybrid LSTM")
-    print("=" * 80)
-
-    preprocessor2 = SnowDataPreprocessor()
-    X_hybrid, y_hybrid, processed_df2 = preprocessor2.preprocess_for_hybrid_lstm(
-        station_data,
-        fit_scalers=True,
-        sequence_length=30
-    )
-
-    print(f"\nHybrid LSTM Input shape: {X_hybrid.shape}")  # (samples, 30, 10)
-    print(f"Hybrid LSTM Output shape: {y_hybrid.shape}")   # (samples, 2)
-    print(f"Features: {preprocessor2.hybrid_features}")
-
-    print("\n✅ Preprocessing pipeline ready!")
+        X, y, processed_df_single = preprocessor.preprocess_for_hybrid_lstm(
+            station_data,
+            fit_scalers=True,
+            sequence_length=30
+        )
+        processed_df_full.append(processed_df_single)
+    processed_df_full = pd.concat(processed_df_full)
