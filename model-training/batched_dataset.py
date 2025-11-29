@@ -123,32 +123,40 @@ class BatchedSnowDataset(Dataset):
 
     def _calculate_sequence_indices(self) -> List[int]:
         """
-        Calculate valid sequence start indices without creating sequences
+        Calculate valid sequence start indices without creating sequences (OPTIMIZED)
         Returns list of indices where sequences can start
         """
-        indices = []
         df = self.processed_df
 
-        # Find valid sequence starting points
+        # Get feature columns
+        if self.model_type == 'plain':
+            feature_cols = self.preprocessor.plain_features
+        else:
+            feature_cols = self.preprocessor.hybrid_features
+
+        target_cols = ['SNWD', 'WTEQ']
+
+        # Pre-compute which rows have valid data (MUCH faster than checking each slice)
+        print(f"  Calculating valid sequence indices for {len(df):,} records...")
+
+        # Check for NaN in features
+        features_valid = ~df[feature_cols].isna().any(axis=1)
+
+        # Check for NaN in targets
+        targets_valid = ~df[target_cols].isna().any(axis=1)
+
+        # Row is valid if both features and targets are valid
+        valid_rows = features_valid & targets_valid
+        valid_indices = valid_rows.to_numpy()
+
+        # Find sequence start indices where all sequence_length + 1 rows are valid
+        indices = []
         for i in range(len(df) - self.sequence_length):
-            # Check if we have enough consecutive data
-            seq_slice = df.iloc[i:i+self.sequence_length+1]
-
-            # Get feature columns
-            if self.model_type == 'plain':
-                feature_cols = self.preprocessor.plain_features
-            else:
-                feature_cols = self.preprocessor.hybrid_features
-
-            target_cols = ['SNWD', 'WTEQ']
-
-            # Check for NaN values in features and targets
-            features_valid = not seq_slice[feature_cols].isna().any().any()
-            targets_valid = not seq_slice[target_cols].iloc[-1].isna().any()
-
-            if features_valid and targets_valid:
+            # Check if all rows in the sequence window are valid
+            if valid_indices[i:i+self.sequence_length+1].all():
                 indices.append(i)
 
+        print(f"  Found {len(indices):,} valid sequences")
         return indices
 
     def __len__(self) -> int:
@@ -375,7 +383,7 @@ def create_memory_efficient_dataloaders(
         pin_memory=False
     )
 
-    print(f"\n✅ Dataloaders created:")
+    print(f"\nDataloaders created:")
     print(f"  Training batches: {len(train_loader)}")
     print(f"  Validation batches: {len(val_loader)}")
 
@@ -455,4 +463,4 @@ if __name__ == "__main__":
         X, y = station_dataset[i]
         print(f"  Sample {i}: X shape {X.shape}, y shape {y.shape}")
 
-    print("\n✅ Memory-efficient dataset ready for training!")
+    print("\nMemory-efficient dataset ready for training!")

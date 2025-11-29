@@ -167,7 +167,7 @@ class PaperModelTrainer:
         model_filename = f"{model_type}_lstm_fold{fold_num:02d}_{test_station.replace(':', '_')}.pth"
         model_path = self.output_dir / model_filename
         trainer.save_model(str(model_path))
-        print(f"\n✅ Model saved: {model_path}")
+        print(f"\nModel saved: {model_path}")
 
         # Save preprocessor scalers
         scaler_filename = f"scalers_{model_type}_fold{fold_num:02d}.pkl"
@@ -270,7 +270,7 @@ class PaperModelTrainer:
 
         # Check if we have enough data
         if len(X_train) < 100:
-            print(f"  ⚠️  Warning: Only {len(X_train)} training sequences")
+            print(f"  WARNING: Only {len(X_train)} training sequences")
             return None
 
         # Create train/val split from training data (90/10)
@@ -324,7 +324,7 @@ class PaperModelTrainer:
         model_filename = f"{model_type}_lstm_fold{fold_num:02d}_{test_station.replace(':', '_')}.pth"
         model_path = self.output_dir / model_filename
         trainer.save_model(str(model_path))
-        print(f"\n✅ Model saved: {model_path}")
+        print(f"\nModel saved: {model_path}")
 
         # Save preprocessor scalers
         scaler_filename = f"scalers_{model_type}_fold{fold_num:02d}.pkl"
@@ -516,7 +516,7 @@ class PaperModelTrainer:
         with open(results_file, 'w') as f:
             json.dump(results_data, f, indent=2)
 
-        print(f"\n💾 Results saved to: {results_file}")
+        print(f"\nResults saved to: {results_file}")
 
 
 # Main execution
@@ -531,7 +531,7 @@ if __name__ == "__main__":
 
     # Check if data exists
     if not Path(DATA_PATH).exists():
-        print(f"\n❌ Error: Data file not found: {DATA_PATH}")
+        print(f"\nError: Data file not found: {DATA_PATH}")
         print("\nPlease ensure you have run collect_sntl_data.py first")
         print("and the output CSV is named 'training_data_2008_2016.csv'")
         exit(1)
@@ -553,6 +553,6 @@ if __name__ == "__main__":
     # trainer.run_leave_one_out_cv(model_type='hybrid', data_preprocessed=False)  # Raw data
 
     print("\n" + "="*80)
-    print("✅ Training Complete!")
+    print("Training Complete!")
     print(f"Models saved in: {OUTPUT_DIR}/")
     print("="*80)

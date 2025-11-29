@@ -524,7 +524,7 @@ if __name__ == "__main__":
 
     # Save model
     plain_trainer.save_model('plain_lstm_model.pth')
-    print("\n✅ Model saved to plain_lstm_model.pth")
+    print("\nModel saved to plain_lstm_model.pth")
 
     # Test Hybrid LSTM
     print("\n" + "=" * 80)
@@ -553,7 +553,7 @@ if __name__ == "__main__":
             print(f"    {metric}: {value:.4f}")
 
     hybrid_trainer.save_model('hybrid_lstm_model.pth')
-    print("\n✅ Model saved to hybrid_lstm_model.pth")
+    print("\nModel saved to hybrid_lstm_model.pth")
 
     print("\n" + "=" * 80)
     print("Model architecture ready for training on real data!")
