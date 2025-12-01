@@ -165,8 +165,12 @@ class SnowModelTrainer:
         self.model.train()
         total_loss = 0
         n_batches = 0
+        total_batches = len(train_loader)
 
-        for X_batch, y_batch in train_loader:
+        # Progress reporting intervals
+        report_interval = max(1, total_batches // 10)  # Report 10 times per epoch
+
+        for batch_idx, (X_batch, y_batch) in enumerate(train_loader):
             X_batch = X_batch.to(self.device)
             y_batch = y_batch.to(self.device)
 
@@ -184,6 +188,11 @@ class SnowModelTrainer:
             total_loss += loss.item()
             n_batches += 1
 
+            # Progress reporting
+            if (batch_idx + 1) % report_interval == 0 or (batch_idx + 1) == total_batches:
+                avg_loss = total_loss / n_batches
+                print(f"  Batch {batch_idx + 1}/{total_batches} - Avg Loss: {avg_loss:.4f}")
+
         return total_loss / n_batches
 
     def validate(self, val_loader: DataLoader, criterion) -> float:
@@ -196,9 +205,10 @@ class SnowModelTrainer:
         self.model.eval()
         total_loss = 0
         n_batches = 0
+        total_batches = len(val_loader)
 
         with torch.no_grad():
-            for X_batch, y_batch in val_loader:
+            for batch_idx, (X_batch, y_batch) in enumerate(val_loader):
                 X_batch = X_batch.to(self.device)
                 y_batch = y_batch.to(self.device)
 
@@ -208,6 +218,7 @@ class SnowModelTrainer:
                 total_loss += loss.item()
                 n_batches += 1
 
+        print(f"  Validation: {total_batches} batches processed")
         return total_loss / n_batches
 
     def train_with_loaders(self, train_loader: DataLoader, val_loader: DataLoader,
@@ -238,14 +249,17 @@ class SnowModelTrainer:
 
         # Training loop
         for epoch in range(epochs):
+            if verbose:
+                print(f"\nEpoch {epoch+1}/{epochs} - Starting...")
+
             train_loss = self.train_epoch(train_loader, optimizer, criterion)
             val_loss = self.validate(val_loader, criterion)
 
             self.train_losses.append(train_loss)
             self.val_losses.append(val_loss)
 
-            if verbose and (epoch + 1) % 10 == 0:
-                print(f"Epoch {epoch+1}/{epochs} - Train Loss: {train_loss:.4f}, Val Loss: {val_loss:.4f}")
+            if verbose:
+                print(f"Epoch {epoch+1}/{epochs} Complete - Train Loss: {train_loss:.4f}, Val Loss: {val_loss:.4f}")
 
             # Early stopping
             if val_loss < best_val_loss:
@@ -362,14 +376,17 @@ class SnowModelTrainer:
 
         # Training loop
         for epoch in range(epochs):
+            if verbose:
+                print(f"\nEpoch {epoch+1}/{epochs} - Starting...")
+
             train_loss = self.train_epoch(train_loader, optimizer, criterion)
             val_loss = self.validate(val_loader, criterion)
 
             self.train_losses.append(train_loss)
             self.val_losses.append(val_loss)
 
-            if verbose and (epoch + 1) % 10 == 0:
-                print(f"Epoch {epoch+1}/{epochs} - Train Loss: {train_loss:.4f}, Val Loss: {val_loss:.4f}")
+            if verbose:
+                print(f"Epoch {epoch+1}/{epochs} Complete - Train Loss: {train_loss:.4f}, Val Loss: {val_loss:.4f}")
 
             # Early stopping
             if val_loss < best_val_loss:
