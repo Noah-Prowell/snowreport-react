@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//d/projects/snowreport-react/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

@@ -150,11 +150,20 @@ components: {
 });
 
 const SkiArea = {
-  GRANBY: { id: 'GHCND:USS0005K14S', name: 'Granby', elevation: '8,280 ft' },
-  JONES_PASS: { id: 'GHCND:USS0005K21S', name: 'Jones Pass', elevation: '12,451 ft' },
-  LOVELAND: { id: 'GHCND:USS0005K05S', name: 'Loveland Pass', elevation: '11,990 ft' },
-  STEVENS_PASS: {id: 'GHCND:USS0021B01S', name: 'Stevens Pass', elevation:'3, 950 ft'},
-  JACKSON_HOLE: {id: 'GHCND:USW00024166', name: 'Jackson Hole', elevation: '6, 419 ft'}
+  // Colorado Stations
+  LOVELAND: { id: '602:CO:SNTL', name: 'Loveland Pass', elevation: '11,990 ft' },
+  BERTHOUD: { id: '335:CO:SNTL', name: 'Berthoud Summit', elevation: '11,315 ft' },
+  JONES_PASS: { id: '970:CO:SNTL', name: 'Jones Pass', elevation: '12,451 ft' },
+  VAIL: { id: '842:CO:SNTL', name: 'Vail', elevation: '10,300 ft' },
+  // Utah Stations
+  SNOWBIRD: { id: '776:UT:SNTL', name: 'Snowbird', elevation: '9,640 ft' },
+  BRIGHTON: { id: '366:UT:SNTL', name: 'Brighton Resort', elevation: '9,660 ft' },
+  // Wyoming Stations
+  GRAND_TARGHEE: { id: '1082:WY:SNTL', name: 'Grand Targhee', elevation: '9,200 ft' },
+  // Washington Stations
+  MT_RAINIER: { id: '679:WA:SNTL', name: 'Mt. Rainier/Paradise', elevation: '5,400 ft' },
+  MT_BAKER: { id: '909:WA:SNTL', name: 'Mt. Baker/Wells Creek', elevation: '4,100 ft' },
+  STEVENS_PASS: {id: '791:WA:SNTL', name: 'Stevens Pass', elevation: '3,940 ft'}
 };
 
 
@@ -162,9 +171,26 @@ const SkiArea = {
 function SnowReportApp() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [selectedArea, setSelectedArea] = useState(SkiArea.GRANBY);
-  const [startDate, setStartDate] = useState('2025-01-07');
-  const [endDate, setEndDate] = useState('2025-01-14');
+  const [selectedArea, setSelectedArea] = useState(SkiArea.LOVELAND);
+
+  // Helper function to format date as YYYY-MM-DD
+  const formatDate = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  // Calculate default dates: end date = today, start date = 2 weeks ago
+  const getDefaultEndDate = () => formatDate(new Date());
+  const getDefaultStartDate = () => {
+    const twoWeeksAgo = new Date();
+    twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+    return formatDate(twoWeeksAgo);
+  };
+
+  const [startDate, setStartDate] = useState(getDefaultStartDate());
+  const [endDate, setEndDate] = useState(getDefaultEndDate());
   const [snowData, setSnowData] = useState([]);
   const [precipData, setPrecipData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -175,10 +201,10 @@ function SnowReportApp() {
   const getApiUrl = () => {
   // Check if we're in development (localhost)
   if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-    return 'http://localhost:3001/api/weather-data';
+    return 'http://localhost:3001/api/weather-data-snotel';
   }
   // In production (Azure), use the relative path
-  return '/api/weather-data';
+  return '/api/weather-data-snotel';
 };
   const fetchWeatherData = useCallback(async (stationId, startDate, endDate) => {
     setLoading(true);

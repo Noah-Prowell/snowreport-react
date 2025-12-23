@@ -1,0 +1,25 @@
+{
+  "timestamp": "2025-11-30T21:50:01.270308",
+  "hyperparameters": {
+    "hidden_size": 150,
+    "num_layers": 1,
+    "dropout": 0.4,
+    "learning_rate": 0.005,
+    "max_epochs": 100,
+    "batch_size": 8,
+    "sequence_length": 30,
+    "loss_function": "MSE",
+    "optimizer": "ADAM"
+  },
+  "results": {
+    "plain_lstm": [],
+    "hybrid_lstm": [
+      {
+        "fold": 1,
+        "test_station": "1049:CA:SNTL",
+        "model_type": "hybrid",
+        "train_batches": 33211,
+        "val_batches": 3827,
+        "metrics": {
+          "SNWD": {
+            "RMSE": 
