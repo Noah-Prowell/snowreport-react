@@ -156,7 +156,7 @@ const SkiArea = {
   JONES_PASS: { id: '970:CO:SNTL', name: 'Jones Pass', elevation: '12,451 ft' },
   VAIL: { id: '842:CO:SNTL', name: 'Vail', elevation: '10,300 ft' },
   // Utah Stations
-  SNOWBIRD: { id: '776:UT:SNTL', name: 'Snowbird', elevation: '9,640 ft' },
+  SNOWBIRD: { id: '766:UT:SNTL', name: 'Snowbird', elevation: '9,640 ft' },
   BRIGHTON: { id: '366:UT:SNTL', name: 'Brighton Resort', elevation: '9,660 ft' },
   // Wyoming Stations
   GRAND_TARGHEE: { id: '1082:WY:SNTL', name: 'Grand Targhee', elevation: '9,200 ft' },
