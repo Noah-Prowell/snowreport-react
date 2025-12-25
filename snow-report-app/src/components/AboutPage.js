@@ -88,7 +88,7 @@ const AboutPage = ({ onNavigateToHome }) => {
     {
       phase: 'MVP',
       date: 'Week 2',
-      description: 'Basic NOAA API integration and data display',
+      description: 'Basic SNOTEL/USDA API integration and data display',
       icon: '🚀'
     },
     {
@@ -110,8 +110,8 @@ const AboutPage = ({ onNavigateToHome }) => {
     {
       icon: <CloudSnow />,
       title: 'Multi-Location Tracking',
-      description: 'Monitor snow conditions across 5+ mountain locations in real-time with historical comparisons.',
-      tech: ['React', 'NOAA API', 'Recharts']
+      description: 'Monitor snow conditions across 9+ mountain locations in real-time with historical comparisons.',
+      tech: ['React', 'SNOTEL/USDA API', 'Recharts']
     },
     {
       icon: <AnalyticsIcon />,
@@ -191,7 +191,7 @@ const AboutPage = ({ onNavigateToHome }) => {
                   lineHeight: 1.6
                 }}
               >
-                A comprehensive weather data platform for snow enthusiasts, combining real-time NOAA data with intuitive visualizations to help you make informed decisions.
+                A comprehensive weather data platform for snow enthusiasts, combining real-time SNOTEL/USDA data with intuitive visualizations to help you make informed decisions.
               </Typography>
               <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
                 <Button
@@ -587,7 +587,7 @@ const AboutPage = ({ onNavigateToHome }) => {
                 </Typography>
                 <Typography variant="body1" paragraph sx={{ lineHeight: 1.8, fontSize: '1.1rem' }}>
                   This passion project combines my expertise in data science with my love for the mountains.
-                  By analyzing NOAA weather station data through statistical methods and time series analysis,
+                  By analyzing SNOTEL/USDA weather station data through statistical methods and time series analysis,
                   I built a platform that doesn't just show current conditions—it reveals patterns, trends,
                   and insights hidden in the data. The goal was to help fellow snow enthusiasts make
                   data-driven decisions about when and where to ride.

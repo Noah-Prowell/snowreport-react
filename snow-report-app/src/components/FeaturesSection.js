@@ -44,7 +44,7 @@ return (
                 Real-Time Data
             </Typography>
             <Typography color="text.secondary">
-                Direct access to NOAA weather stations for the most accurate, up-to-date conditions.
+                Direct access to SNOTEL/USDA weather stations for the most accurate, up-to-date conditions.
             </Typography>
             </Grid>
             <Grid item xs={12} md={4} textAlign="center">

@@ -136,7 +136,7 @@ return (
         </Grid>
         <Grid item xs={12} md={6}>
         <Typography variant="body1" sx={{ mb: 3, color: 'rgba(255,255,255,0.8)' }}>
-            Snow Report provides essential weather data for backcountry enthusiasts. Built with real-time NOAA data to help you make safe, informed decisions in the mountains.
+            Snow Report provides essential weather data for backcountry enthusiasts. Built with real-time SNOTEL/USDA data to help you make safe, informed decisions in the mountains.
         </Typography>
         <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.6)' }}>
             © 2024 Snow Report. All rights reserved.

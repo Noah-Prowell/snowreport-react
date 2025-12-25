@@ -46,7 +46,7 @@ return (
         Decisions
         </Typography>
         <Typography variant="h5" sx={{ mb: 4, color: 'rgba(255,255,255,0.9)', maxWidth: '600px', mx: 'auto' }}>
-        Real-time snow depth and precipitation data from NOAA weather stations across the US premier backcountry areas.
+        Real-time snow depth and precipitation data from SNOTEL/USDA weather stations across the US premier backcountry areas.
         </Typography>
         <Button
         variant="contained"
